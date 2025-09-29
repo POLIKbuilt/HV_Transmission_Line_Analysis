@@ -75,7 +75,7 @@ def ampacita(Pc, Pr, Ps, Rdc20):
     alpha_R = 0.00403
     # betta_R = 0
     k_acdc = 1.080
-    Rdc80 = (Rdc20 * (1 - alpha_R * (80 - 20) )) / 1000
+    Rdc80 = (Rdc20 * (1 - alpha_R * 60)) / 1000
     Rac80 = Rdc80 * k_acdc
     I_dov = np.sqrt((Pc + Pr - Ps) / Rac80)
     return I_dov
