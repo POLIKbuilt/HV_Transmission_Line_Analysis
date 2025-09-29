@@ -41,8 +41,8 @@ def teplo_konvekcii(t_s, t_a, h, v, d, d_s):
     print("90", Nu90)
     Nu45 = (0.42 + 0.58 * (np.sin(45)) ** 0.90 ) * Nu90
     print("45", Nu45)
-    Nu_corr = 0.55 * Nu45
-    Gr = ( (d / 1000) ** 3 * ( t_s - t_a ) * g ) / ( t_f + 273 ) * v_f ** 2
+    Nu_corr = 0.55 * Nu90
+    Gr = ((d / 1000) ** 3 * ( t_s - t_a ) * g ) / (( t_f + 273 ) * v_f ** 2)
     Pr = 0.715 - 0.00025 * t_f
     sumar = Gr * Pr
     if sumar > 0 and sumar < 0.1:
@@ -61,6 +61,7 @@ def teplo_konvekcii(t_s, t_a, h, v, d, d_s):
         A2 = 0.125
         M2 = 0.333
     Nu_nat = A2 * (Gr * Pr) ** M2
+    print(max(Nu_nat,Nu_corr,Nu45))
     Pc = np.pi * lambda_f * ( t_s - t_a ) * max(Nu_nat,Nu_corr,Nu45)
     return Pc
 
