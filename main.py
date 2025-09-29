@@ -44,7 +44,7 @@ if __name__ == "__main__":
     Ps = Demand_Current.teplo_ziarenia(1000, 30.2)
     result = round(Demand_Current.ampacita(Pc, Pr, Ps, Rdc20),3)
 
-    print("For current demand result is:", result)
+    print("Current demand:", result)
 
 """
     # Example inputs (replace with real per-length values)
