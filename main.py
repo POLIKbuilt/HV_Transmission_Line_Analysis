@@ -17,10 +17,11 @@ def teplo_ziarenia(I_s, d):
     return Ps
 
 def teplo_konvekcii(t_s, t_a, h, v, d, d_s):
-    t_f = 0.5 * (t_s - t_a)
+    t_f = 0.5 * (t_s + t_a)
     v_f = 0.0000132 + 0.000000015 * t_f
     lambda_f = 0.0242 + 0.000072 * t_f
     por = np.e ** (-0.000116 * h)
+    print("por", por)
     R_e = por * v * ( (d / 1000) / v_f )
     print("re", R_e)
     R_s = d_s / ( 2 * ( d - d_s ) )
