@@ -23,10 +23,20 @@ def teplo_konvekcii(t_s, t_a, h, v, d, d_s):
     por = np.e ** (-0.000116 * h)
     R_e = por * v * ( (d / 1000) / v_f )
     R_s = (d_s / 1000) / 2 * ( (d / 1000) - (d_s / 1000) )
-    B1 = 0.691
-    N1 = 0.471
+    if R_s < 0.05 and R_e > 100 and R_e < 2650:
+        B1 = 0.691
+        N1 = 0.471
+    elif R_s < 0.05 and R_e > 2650 and R_e < 50000:
+        B1 = 0.178
+        N1 = 0.633
+    elif R_s > 0.05 and R_e > 100 and R_e < 2650:
+        B1 = 0.691
+        N1 = 0.471
+    elif R_s > 0.05 and R_e > 2650 and R_e < 50000:
+        B1 = 0.048
+        N1 = 0.8
     Nu90 = B1 * (R_e * N1)
-    Nu45 = (0.42 + 0.58 * np.sin(math.radians(45)) ** 0.9 ) * v * Nu90
+    Nu45 = (0.42 + 0.58 * np.sin(45) ** 0.9 ) * v * Nu90
     print(Nu45)
     Nu_corr = 0.55 * Nu45
     Gr = ( (d / 1000) ** 3 * ( t_s - t_a ) * g ) / ( t_f + 273 ) * v_f ** 2
