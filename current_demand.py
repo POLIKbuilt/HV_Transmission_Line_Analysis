@@ -2,6 +2,7 @@ import numpy as np
 from scipy.constants import sigma, g
 
 class Demand_Current:
+
     def teplo_ziarenia(I_s, d):
         Ps = 0.5 * I_s * (d / 1000)
         return Ps
@@ -11,7 +12,6 @@ class Demand_Current:
         v_f = 0.0000132 + 0.000000095 * t_f
         lambda_f = 0.0242 + 0.000072 * t_f
         por = np.e ** (-0.000116 * h)
-        print("por", por)
         R_e = por * v * ( (d / 1000) / v_f )
         print("re", R_e)
         R_s = d_s / ( 2 * ( d - d_s ) )
