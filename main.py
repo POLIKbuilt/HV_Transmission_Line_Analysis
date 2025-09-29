@@ -18,7 +18,7 @@ def teplo_ziarenia(I_s, d):
 
 def teplo_konvekcii(t_s, t_a, h, v, d, d_s):
     t_f = 0.5 * (t_s + t_a)
-    v_f = 0.0000132 + 0.000000015 * t_f
+    v_f = 0.0000132 + 0.000000095 * t_f
     lambda_f = 0.0242 + 0.000072 * t_f
     por = np.e ** (-0.000116 * h)
     print("por", por)
@@ -37,9 +37,9 @@ def teplo_konvekcii(t_s, t_a, h, v, d, d_s):
     elif R_s > 0.05 and R_e > 2650 and R_e < 50000:
         B1 = 0.048
         N1 = 0.8
-    Nu90 = B1 * (R_e * N1)
+    Nu90 = B1 * (R_e ** N1)
     print("90", Nu90)
-    Nu45 = (0.42 + 0.58 * np.sin(45) ** 0.9 ) * v * Nu90
+    Nu45 = (0.42 + 0.58 * (np.sin(45)) ** 0.90 ) * Nu90
     print("45", Nu45)
     Nu_corr = 0.55 * Nu45
     Gr = ( (d / 1000) ** 3 * ( t_s - t_a ) * g ) / ( t_f + 273 ) * v_f ** 2
