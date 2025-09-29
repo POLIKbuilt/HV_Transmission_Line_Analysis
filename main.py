@@ -1,5 +1,3 @@
-import csv
-
 import numpy as np
 import os
 
@@ -12,7 +10,7 @@ def load_terrain(file_path):
     with open(file_path, 'r') as csv:
         land_data = csv.reader()
 
-
+def
 
 def txline_from_per_length(Zp, Yp, length_m):
     """
