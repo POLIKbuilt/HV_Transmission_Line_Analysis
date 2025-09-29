@@ -10,9 +10,6 @@ def load_terrain(file_path):
     with open(file_path, 'r') as csv:
         land_data = csv.reader()
 
-
-
-
 def txline_from_per_length(Zp, Yp, length_m):
     """
     Zp: complex series impedance per meter (ohm/m)
@@ -41,6 +38,15 @@ def txline_from_per_length(Zp, Yp, length_m):
     }
 
 if __name__ == "__main__":
+    Rdc20 = 0.0608
+    Pc = Demand_Current.teplo_konvekcii(80, 35, 400, 0.5, 30.2, 3.35)
+    Pr = Demand_Current.teplo_radiation(30.2, 35, 80)
+    Ps = Demand_Current.teplo_ziarenia(1000, 30.2)
+    result = Demand_Current.ampacita(Pc, Pr, Ps, Rdc20)
+
+    print("For current demand result is:", result)
+
+"""
     # Example inputs (replace with real per-length values)
     # Example per-km values (convert to per-meter below)
     R_per_km = 0.1        # ohm/km  (series resistance)
@@ -74,6 +80,6 @@ if __name__ == "__main__":
     print(" B =", cmplx(result["B"]))
     print(" C =", cmplx(result["C"]))
     print(" D =", cmplx(result["D"]))
-
+"""
     
     

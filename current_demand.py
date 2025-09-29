@@ -66,12 +66,3 @@ class Demand_Current:
         Rac80 = Rdc80 * k_acdc
         I_dov = np.sqrt((Pc + Pr - Ps) / Rac80)
         return I_dov
-
-if __name__ == "__main__":
-    Rdc20 = 0.0608
-    Pc = Demand_Current.teplo_konvekcii(80, 35, 400, 0.5, 30.2, 3.35)
-    Pr = Demand_Current.teplo_radiation(30.2, 35, 80)
-    Ps = Demand_Current.teplo_ziarenia(1000, 30.2)
-    result = Demand_Current.ampacita(Pc, Pr, Ps, Rdc20)
-
-    print("For current demand result is:", result)
