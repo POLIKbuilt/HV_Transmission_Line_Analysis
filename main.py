@@ -1,5 +1,7 @@
 import numpy as np
 import os
+
+from pyexpat import ParserCreate
 from scipy.constants import sigma, g
 
 base_dir = os.path.dirname(__file__)
@@ -58,7 +60,7 @@ def ampacita(Pc, Pr, Ps, Rdc20):
     alpha_R = 0.00403
     betta_R = 0
     k_acdc = 1.080
-    Rdc80 = Rdc20 * (1 - alpha_R * (80 - 20) + betta_R * (80 - 20))
+    Rdc80 = (Rdc20 * (1 - alpha_R * (80 - 20) + betta_R * (80 - 20))) / 1000
     Rac80 = Rdc80 * k_acdc
     I_dov = np.sqrt((Pc + Pr - Ps) / Rac80)
     return I_dov
@@ -125,6 +127,12 @@ if __name__ == "__main__":
     print(" B =", cmplx(result["B"]))
     print(" C =", cmplx(result["C"]))
     print(" D =", cmplx(result["D"]))
-    
+
+    Rdc20 = 0.0608
+    Pc = teplo_konvekcii(80, 35, 400, 0.5, 30.2, 3.35)
+    Pr = teplo_radiation(30.2, 35, 80)
+    Ps = teplo_ziarenia(1000, 30.2)
+
+    print("For current demand result is:", ampacita(Pc, Pr, Ps, Rdc20))
     
     
