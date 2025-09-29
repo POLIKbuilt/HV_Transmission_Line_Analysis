@@ -1,6 +1,6 @@
 import numpy as np
 import os
-from scipy.constants import sigma
+from scipy.constants import sigma, g
 
 base_dir = os.path.dirname(__file__)
 
@@ -28,11 +28,26 @@ def teplo_konvekcii(t_s, t_a, h, v, d, d_s):
     Nu45 = (0.42 + 0.58 * np.sin(45) ** 0.9 ) * v * Nu90
     print(Nu45)
     Nu_corr = 0.55 * Nu45
-    Gr = d ** 3 *
-    A2 = 0.480
-    M2 = 0.250
-    Nu = A1 * (Gr * Pr) ** M2
-    Pc = np.pi * lambda_f * ( t_s - t_a ) * Nu
+    Gr = ( d ** 3 * ( t_s - t_a ) * g ) / ( t_f + 273 ) * v_f ** 2
+    Pr = 0.715 - 0.00025 * t_f
+    sumar = Gr * Pr
+    if sumar > 0 and sumar < 0.1:
+        A2 = 0.675
+        M2 = 0.058
+    elif sumar > 0.1 and sumar < 100:
+        A2 = 1.020
+        M2 = 0.148
+    elif sumar > 100 and sumar < 1000:
+        A2 = 0.850
+        M2 = 0.188
+    elif sumar > 1000 and sumar < 10 ** 7:
+        A2 = 0.480
+        M2 = 0.250
+    else:
+        A2 = 0.125
+        M2 = 0.333
+    Nu_nat = A1 * (Gr * Pr) ** M2
+    Pc = np.pi * lambda_f * ( t_s - t_a ) * max(Nu_nat,Nu_corr,Nu45)
     return Pc
 
 def teplo_radiation(d, t_a, t_s):
