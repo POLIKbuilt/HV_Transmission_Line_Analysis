@@ -3,7 +3,6 @@ import numpy as np
 from scipy.constants import sigma, g
 
 class Demand_Current:
-
     def teplo_ziarenia(self, I_s, d):
         Ps = 0.5 * I_s * (d / 1000)
         return Ps
@@ -71,9 +70,9 @@ class Demand_Current:
         return I_dov
 
 if __name__ == "__main__":
+    Pc = Demand_Current.teplo_konvekcii(80, 35, 400, 0.5, 30.2, 3.35)
+    Pr = Demand_Current.teplo_radiation(30.2, 35, 80)
+    Ps = Demand_Current.teplo_ziarenia(1000, 30.2)
+    result = Demand_Current.ampacita(Pc, Pr, Ps, Rdc20)
 
-    Pc = teplo_konvekcii(80, 35, 400, 0.5, 30.2, 3.35)
-    Pr = teplo_radiation(30.2, 35, 80)
-    Ps = teplo_ziarenia(1000, 30.2)
-
-    print("For current demand result is:", ampacita(Pc, Pr, Ps, Rdc20))
+    print("For current demand result is:", result)
