@@ -1,4 +1,18 @@
+import csv
+
 import numpy as np
+import os
+
+base_dir = os.path.dirname(__file__)
+
+file_path = os.path.join(base_dir, 'data.csv')
+# 'D:\IT\Transmission_Line_Analysis_VEV'
+
+def load_terrain(file_path):
+    with open(file_path, 'r') as csv:
+        land_data = csv.reader()
+
+
 
 def txline_from_per_length(Zp, Yp, length_m):
     """
