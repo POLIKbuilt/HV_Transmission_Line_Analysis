@@ -13,7 +13,7 @@ def load_terrain(file_path):
         land_data = csv.reader()
 
 def teplo_ziarenia(I_s, d):
-    Ps = 0.5 * I_s * d / 1000
+    Ps = 0.5 * I_s * (d / 1000)
     return Ps
 
 def teplo_konvekcii(t_s, t_a, h, v, d, d_s):
@@ -21,15 +21,15 @@ def teplo_konvekcii(t_s, t_a, h, v, d, d_s):
     v_f = 0.0000132 + 0.000000015 * t_f
     lambda_f = 0.0242 + 0.000072 * t_f
     por = np.e ** (-0.000116 * h)
-    R_e = por * v * ( d / v_f )
-    R_s = d_s / 2 * ( d - d_s )
+    R_e = por * v * ( (d / 1000) / v_f )
+    R_s = (d_s / 1000) / 2 * ( (d / 1000) - (d_s / 1000) )
     B1 = 0.691
     N1 = 0.471
     Nu90 = B1 * (R_e * N1)
     Nu45 = (0.42 + 0.58 * np.sin(math.radians(45)) ** 0.9 ) * v * Nu90
     print(Nu45)
     Nu_corr = 0.55 * Nu45
-    Gr = ( d ** 3 * ( t_s - t_a ) * g ) / ( t_f + 273 ) * v_f ** 2
+    Gr = ( (d / 1000) ** 3 * ( t_s - t_a ) * g ) / ( t_f + 273 ) * v_f ** 2
     Pr = 0.715 - 0.00025 * t_f
     sumar = Gr * Pr
     if sumar > 0 and sumar < 0.1:
@@ -52,7 +52,7 @@ def teplo_konvekcii(t_s, t_a, h, v, d, d_s):
     return Pc
 
 def teplo_radiation(d, t_a, t_s):
-    Pr = np.pi * d * sigma  * 0.5 * ( (t_s + 273 ) ** 4 - (t_a + 273) ** 4)
+    Pr = np.pi * (d / 1000) * sigma  * 0.5 * ( (t_s + 273 ) ** 4 - (t_a + 273) ** 4)
     return  Pr
 
 def ampacita(Pc, Pr, Ps, Rdc20):
