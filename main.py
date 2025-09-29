@@ -42,7 +42,7 @@ if __name__ == "__main__":
     Pc = Demand_Current.teplo_konvekcii(80, 35, 400, 0.5, 30.2, 3.35)
     Pr = Demand_Current.teplo_radiation(30.2, 35, 80)
     Ps = Demand_Current.teplo_ziarenia(1000, 30.2)
-    result = Demand_Current.ampacita(Pc, Pr, Ps, Rdc20)
+    result = round(Demand_Current.ampacita(Pc, Pr, Ps, Rdc20),3)
 
     print("For current demand result is:", result)
 
