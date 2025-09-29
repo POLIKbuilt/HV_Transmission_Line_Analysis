@@ -66,6 +66,7 @@ def teplo_konvekcii(t_s, t_a, h, v, d, d_s):
     return Pc
 
 def teplo_radiation(d, t_a, t_s):
+    print("sigma", sigma)
     Pr = np.pi * (d / 1000) * sigma  * 0.5 * ( (t_s + 273 ) ** 4 - (t_a + 273) ** 4)
     return  Pr
 
@@ -146,7 +147,8 @@ if __name__ == "__main__":
     Pc = teplo_konvekcii(80, 35, 400, 0.5, 30.2, 3.35)
     Pr = teplo_radiation(30.2, 35, 80)
     Ps = teplo_ziarenia(1000, 30.2)
+    ampa = ampacita(Pc, Pr, Ps, Rdc20)
 
-    print("For current demand result is:", ampacita(Pc, Pr, Ps, Rdc20))
+    print("For current demand result is:", ampa)
     
     
