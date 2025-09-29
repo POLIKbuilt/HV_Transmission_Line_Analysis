@@ -70,6 +70,7 @@ def teplo_radiation(d, t_a, t_s):
     return  Pr
 
 def ampacita(Pc, Pr, Ps, Rdc20):
+    # still not correct
     alpha_R = 0.00403
     betta_R = 0
     k_acdc = 1.080
