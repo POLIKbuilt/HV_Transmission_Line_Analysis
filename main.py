@@ -68,6 +68,7 @@ def teplo_konvekcii(t_s, t_a, h, v, d, d_s):
 def teplo_radiation(d, t_a, t_s):
     print("sigma", sigma)
     Pr = np.pi * (d / 1000) * sigma  * 0.5 * ( (t_s + 273 ) ** 4 - (t_a + 273) ** 4)
+    print("pr", Pr)
     return  Pr
 
 def ampacita(Pc, Pr, Ps, Rdc20):
@@ -75,7 +76,7 @@ def ampacita(Pc, Pr, Ps, Rdc20):
     alpha_R = 0.00403
     # betta_R = 0
     k_acdc = 1.080
-    Rdc80 = (Rdc20 * (1 - alpha_R * 60)) / 1000
+    Rdc80 = (Rdc20 * (1 + alpha_R * 60)) / 1000
     Rac80 = Rdc80 * k_acdc
     I_dov = np.sqrt((Pc + Pr - Ps) / Rac80)
     return I_dov
