@@ -48,7 +48,6 @@ class Demand_Current:
             A2 = 0.125
             M2 = 0.333
         Nu_nat = A2 * (Gr * Pr) ** M2
-        print(max(Nu_nat,Nu_corr,Nu45))
         Pc = np.pi * lambda_f * ( t_s - t_a ) * max(Nu_nat,Nu_corr,Nu45)
         return Pc
 
