@@ -37,8 +37,9 @@ def teplo_konvekcii(t_s, t_a, h, v, d, d_s):
         B1 = 0.048
         N1 = 0.8
     Nu90 = B1 * (R_e * N1)
+    print("90", Nu90)
     Nu45 = (0.42 + 0.58 * np.sin(45) ** 0.9 ) * v * Nu90
-    print(Nu45)
+    print("45", Nu45)
     Nu_corr = 0.55 * Nu45
     Gr = ( (d / 1000) ** 3 * ( t_s - t_a ) * g ) / ( t_f + 273 ) * v_f ** 2
     Pr = 0.715 - 0.00025 * t_f
