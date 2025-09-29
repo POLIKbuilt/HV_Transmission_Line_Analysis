@@ -13,7 +13,6 @@ class Demand_Current:
         lambda_f = 0.0242 + 0.000072 * t_f
         por = np.e ** (-0.000116 * h)
         R_e = por * v * ( (d / 1000) / v_f )
-        print("re", R_e)
         R_s = d_s / ( 2 * ( d - d_s ) )
         if R_s < 0.05 and R_e > 100 and R_e < 2650:
             B1 = 0.691
@@ -28,9 +27,7 @@ class Demand_Current:
             B1 = 0.048
             N1 = 0.8
         Nu90 = B1 * (R_e ** N1)
-        print("90", Nu90)
         Nu45 = (0.42 + 0.58 * (np.sin(45)) ** 0.90 ) * Nu90
-        print("45", Nu45)
         Nu_corr = 0.55 * Nu90
         Gr = ((d / 1000) ** 3 * ( t_s - t_a ) * g ) / (( t_f + 273 ) * v_f ** 2)
         Pr = 0.715 - 0.00025 * t_f
