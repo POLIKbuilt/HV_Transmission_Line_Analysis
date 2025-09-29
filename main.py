@@ -1,5 +1,6 @@
 import numpy as np
 import os
+from scipy.constants import sigma
 
 base_dir = os.path.dirname(__file__)
 
@@ -10,7 +11,43 @@ def load_terrain(file_path):
     with open(file_path, 'r') as csv:
         land_data = csv.reader()
 
-def
+def teplo_ziarenia(I_s, d):
+    Ps = 0.5 * I_s * d / 1000
+    return Ps
+
+def teplo_konvekcii(t_s, t_a, h, v, d, d_s):
+    t_f = 0.5 * (t_s - t_a)
+    v_f = 0.0000132 + 0.000000015 * t_f
+    lambda_f = 0.0242 + 0.000072 * t_f
+    por = np.e ** (-0.000116 * h)
+    R_e = por * v * ( d / v_f )
+    R_s = d_s / 2 * ( d - d_s )
+    B1 = 0.691
+    N1 = 0.471
+    Nu90 = B1 * (R_e * N1)
+    Nu45 = (0.42 + 0.58 * np.sin(45) ** 0.4 ) * v * Nu90
+    print(Nu45)
+    Nu_corr = 0.55 * Nu45
+    Gr = d ** 3 *
+    A2 = 0.480
+    M2 = 0.250
+    Nu = A1 * (Gr * Pr) ** M2
+    Pc = np.pi * lambda_f * ( t_s - t_a ) * Nu
+    return Pc
+
+def teplo_radiation(d, t_a, t_s):
+    Pr = np.pi * d * sigma  * 0.5 * ( (t_s + 273 ) ** 4 - (t_a + 273) ** 4)
+    return  Pr
+
+def ampacita(Pc, Pr, Ps, Rdc20):
+    alpha_R = 0.00403
+    betta_R = 0
+    k_acdc = 1.080
+    Rdc80 = Rdc20 * (1 - alpha_R * (80 - 20) + betta_R * (80 - 20))
+    Rac80 = Rdc80 * k_acdc
+    I_dov = np.sqrt((Pc + Pr - Ps) / Rac80)
+    return I_dov
+
 
 def txline_from_per_length(Zp, Yp, length_m):
     """
