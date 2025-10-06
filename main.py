@@ -1,4 +1,5 @@
 import os
+import csv
 from current_demand import *
 
 base_dir = os.path.dirname(__file__)
@@ -13,6 +14,8 @@ def load_terrain(file_path):
 
 
 if __name__ == "__main__":
+    with open("data/data.csv", newline="") as csvfile:
+        reader = csv.reader(csvfile)
     Rdc20 = 0.0608
     Pc = Demand_Current.teplo_konvekcii(80, 35, 400, 0.5, 30.2, 3.35)
     Pr = Demand_Current.teplo_radiation(30.2, 35, 80)
