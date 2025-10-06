@@ -14,8 +14,15 @@ def load_terrain(file_path):
 
 
 if __name__ == "__main__":
+    # csv read
     with open("data/data.csv", newline="") as csvfile:
         reader = csv.reader(csvfile)
+    # project data input
+    T_env_max = 33 # C degrees
+    V_min = 0.4 # m/s
+    I_sun = 1097 # w/m
+    k_abs = 0.5
+    k_emis = 0.5
     Rdc20 = 0.0608
     Pc = Demand_Current.teplo_konvekcii(80, 35, 400, 0.5, 30.2, 3.35)
     Pr = Demand_Current.teplo_radiation(30.2, 35, 80)
