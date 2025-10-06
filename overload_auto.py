@@ -5,10 +5,11 @@ from scipy.constants import g
 import numpy as np
 
 class Overload_calculations:
-    def __init__(self, iso_length, chosen_X, cable_unit_weight):
+    def __init__(self, chosen_X, cable_unit_weight, d_mm):
         self.file_path = FILE_PATH
-        self.iso_length = iso_length
+        self.iso_length = ISOLATOR_LENGTH
         self.cable_weight = cable_unit_weight
+        self.cable_d = d_mm / 1000
         self.posts_X = chosen_X
         self.posts_Y = []
         self.posts_H = []
@@ -35,6 +36,8 @@ class Overload_calculations:
 
     def load_calculations(self):
         cable_g = self.cable_weight * g
+        I_R50 = FROST_K1 + FROST_K2 * (self.cable_d * 1000)
+
 
 
 
