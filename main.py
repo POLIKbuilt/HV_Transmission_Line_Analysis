@@ -18,9 +18,9 @@ def load_terrain(file_path):
         for row in reader:
             ter_X.append(float(row["X"]))
             ter_Y.append(float(row["Y"]))
-        plt.plot(ter_X,ter_Y)
-        plt.title("Terrain")
-        plt.show()
+        # plt.plot(ter_X,ter_Y)
+        # plt.title("Terrain")
+        # plt.show()
 
 
 if __name__ == "__main__":
@@ -42,10 +42,18 @@ if __name__ == "__main__":
 
     # main run
     terrain_data = load_terrain(file_path)
-    Pc = Demand_Current.teplo_konvekcii(80, 35, 400, 0.5, 30.2, 3.35)
-    Pr = Demand_Current.teplo_radiation(30.2, 35, 80)
-    Ps = Demand_Current.teplo_ziarenia(1000, 30.2)
-    result = round(Demand_Current.ampacita(Pc, Pr, Ps, Rdc20),3)
+
+    result_array = []
+    temp_array = range(35,80,1)
+    for t_a in temp_array:
+        Pc = Demand_Current.teplo_konvekcii(80, t_a, 400, 0.5, 30.2, 3.35)
+        Pr = Demand_Current.teplo_radiation(30.2, t_a, 80)
+        Ps = Demand_Current.teplo_ziarenia(1000, 30.2)
+        result_array.append(round(Demand_Current.ampacita(Pc, Pr, Ps, Rdc20),3))
+    plt.plot(temp_array, result_array)
+    plt.title("Ampacy")
+    plt.show()
+
 
     print("Current demand:", result)
 
