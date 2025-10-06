@@ -54,9 +54,4 @@ if __name__ == "__main__":
     plt.title("Ampacy")
     plt.show()
 
-
-    print("Current demand:", result)
-
-
-    
     
