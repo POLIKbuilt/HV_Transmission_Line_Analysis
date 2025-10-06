@@ -3,8 +3,9 @@ import csv
 import numpy as np
 
 class Overload_calculations:
-    def __init__(self, file_path, chosen_X):
+    def __init__(self, file_path, iso_length, chosen_X):
         self.file_path = file_path
+        self.iso_length = iso_length
         self.posts_X = chosen_X
         self.posts_Y = []
         self.posts_H = []
@@ -23,11 +24,18 @@ class Overload_calculations:
                 for j in range(len(ter_X)):
                     if self.posts_X[i] == ter_X[j]:
                         self.posts_Y.append(round(ter_Y[j],3))
-
+                self.posts_N.append(0)
+                if i == 0 or i == len(self.posts_X):
+                    self.posts_H.append(18.20)
+                else:
+                    self.posts_H.append(24)
 
     def overload_result(self):
+        self.load_terrain()
         print("Chosen X for posts", self.posts_X)
         print("Chosen Y for posts", self.posts_Y)
+        print("Chosen H for posts", self.posts_H)
+        print("Chosen N for posts", self.posts_N)
 
 
 
