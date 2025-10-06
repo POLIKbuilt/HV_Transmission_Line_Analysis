@@ -19,7 +19,8 @@ if __name__ == "__main__":
     Rdc20 = 0.0608
 
     # main run
-    terrain_data = Overload_calculations.load_terrain(file_path)
+    terrain_data = Overload_calculations(file_path)
+    terrain_data.load_terrain()
 
     result_array = []
     temp_array = range(35,80,1)

@@ -8,11 +8,14 @@ class Overload_calculations:
     posts_H = []
     posts_N = []
 
-    def load_terrain(file_path):
+    def __init__(self, file_path):
+        self.file_path = file_path
+
+    def load_terrain(self):
         # csv read
         ter_X = []
         ter_Y = []
-        with open(file_path, newline="", encoding="utf-8-sig") as csvfile:
+        with open(self.file_path, newline="", encoding="utf-8-sig") as csvfile:
             reader = csv.DictReader(csvfile)
             print(reader.fieldnames)
             for row in reader:
