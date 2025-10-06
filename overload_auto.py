@@ -13,7 +13,11 @@ class Overload_calculations:
         self.posts_X = chosen_X
         self.posts_Y = []
         self.posts_H = []
-        self.posts_N = []
+        self.posts_N = [12, 12, 12, 12, 3]
+        self.posts_A = []
+        for i in range(len(chosen_X) - 1):
+            x_diff = chosen_X[i+1] - chosen_X[i]
+            self.posts_A.append(x_diff)
 
     def load_terrain(self):
         # csv read
@@ -28,7 +32,6 @@ class Overload_calculations:
                 for j in range(len(ter_X)):
                     if self.posts_X[i] == ter_X[j]:
                         self.posts_Y.append(round(ter_Y[j],3))
-                self.posts_N.append(0)
                 if i == 0 or i == len(self.posts_X):
                     self.posts_H.append(18.20)
                 else:
@@ -37,16 +40,38 @@ class Overload_calculations:
     def load_calculations(self):
         cable_g = self.cable_weight * g
         I_R50 = FROST_K1 + FROST_K2 * (self.cable_d * 1000)
+        posts_H_con = []
+        for i in range(len(self.posts_X)):
+            if i == 0 or i == len(self.posts_X):
+                h_diff = self.posts_H[i] + self.posts_N[i]
+                posts_H_con.append(h_diff)
+            else:
+                h_diff = self.posts_H[i] + self.posts_N[i] - ISOLATOR_LENGTH
+                posts_H_con.append(h_diff)
+        H_con_average = sum(posts_H_con) / len(posts_H_con)
+        k_h = (H_con_average / 10) ** 0.13
+        wind_v_average = WIND_V_SPEC * C_DIR * C_0 * K_R * np.log(H_con_average / Z_0)
+        turb_intz = 1 / (C_0 * np.log(H_con_average / Z_0))
+        turb_responce = sum(self.posts_A)
+        turb_lenth = 300 * ( (H_con_average / 200) ** (0.67 + 0.05 * np.log(Z_0)))
+        frost_load = I_R50 * k_h * K_LC
+        wind_q_average = 0.5 * P_AIR * wind_v_average ** 2
+        wind_q_max = (1 + 7 * turb_intz) * wind_q_average
+
+
+
 
 
 
 
     def overload_result(self):
         self.load_terrain()
+        self.load_calculations()
         print("Chosen X for posts", self.posts_X)
         print("Chosen Y for posts", self.posts_Y)
         print("Chosen H for posts", self.posts_H)
         print("Chosen N for posts", self.posts_N)
+        print("Chosen A for posts", self.posts_A)
 
 
 
