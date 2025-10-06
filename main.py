@@ -1,8 +1,6 @@
 from current_demand import *
 from overload_auto import *
 
-
-
 if __name__ == "__main__":
     file_path = "data/data.csv"
     # project data input
