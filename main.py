@@ -16,7 +16,6 @@ def load_terrain(file_path):
         reader = csv.DictReader(csvfile)
         print(reader.fieldnames)
         for row in reader:
-            print(row["X"], row["Y"])
             ter_X.append(float(row["X"]))
             ter_Y.append(float(row["Y"]))
         plt.plot(ter_X,ter_Y)
