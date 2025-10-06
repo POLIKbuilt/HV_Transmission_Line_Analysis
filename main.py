@@ -23,6 +23,12 @@ if __name__ == "__main__":
     I_sun = 1097 # w/m
     k_abs = 0.5
     k_emis = 0.5
+    # cable data sheet input
+    T_cab_max = 80 # C degree
+    h_env = 12 # m
+    L_dn = 5 # m
+    ampacita_min = 2000 # A
+
     Rdc20 = 0.0608
     Pc = Demand_Current.teplo_konvekcii(80, 35, 400, 0.5, 30.2, 3.35)
     Pr = Demand_Current.teplo_radiation(30.2, 35, 80)
