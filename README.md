@@ -15,4 +15,4 @@ Minimal number of lines is 4.
 Line bases are inputted as X coordinates and it's height. 
 Table of inputted parameters should be created based only on X coordinates.
 N - vyskovy stupen, how high will be the line (3,6,9,12).
-
+All additional info can be found in scripts on page 123.
