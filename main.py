@@ -19,6 +19,7 @@ if __name__ == "__main__":
     h_sea = 400
     isolator_length = 5
     # cable data sheet input
+    cable_unit_weight = 1.4523 # kg/m
     T_cab_max = 80 # C degree
     h_env = 12 # m
     L_dn = 5 # m
@@ -27,7 +28,7 @@ if __name__ == "__main__":
     Rdc20 = 0.0608
 
     # main run
-    terrain_data = Overload_calculations(file_path, isolator_length,[0,275,600,800,1300])
+    terrain_data = Overload_calculations(file_path, isolator_length,[0,275,600,800,1300], cable_unit_weight)
     terrain_data.overload_result()
 
     result_array = []

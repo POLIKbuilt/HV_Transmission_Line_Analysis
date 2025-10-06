@@ -1,11 +1,13 @@
 # Basically calculation of overload on task provided cable
 import csv
+from scipy.optimize import g
 import numpy as np
 
 class Overload_calculations:
-    def __init__(self, file_path, iso_length, chosen_X):
+    def __init__(self, file_path, iso_length, chosen_X, cable_unit_weight):
         self.file_path = file_path
         self.iso_length = iso_length
+        self.cable_weight = cable_unit_weight
         self.posts_X = chosen_X
         self.posts_Y = []
         self.posts_H = []
@@ -29,6 +31,11 @@ class Overload_calculations:
                     self.posts_H.append(18.20)
                 else:
                     self.posts_H.append(24)
+
+    def load_calculations(self):
+        cable_g = self.cable_weight * g
+
+
 
     def overload_result(self):
         self.load_terrain()
