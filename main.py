@@ -1,5 +1,6 @@
 import os
 import csv
+import  matplotlib.pyplot as plt
 from current_demand import *
 
 base_dir = os.path.dirname(__file__)
@@ -9,8 +10,16 @@ file_path = os.path.join(base_dir, 'data.csv')
 
 def load_terrain(file_path):
     # csv read
+    ter_X = []
+    ter_Y = []
     with open(file_path, newline="") as csvfile:
-        reader = csv.reader(csvfile)
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            ter_X.append(float(row["X"]))
+            ter_Y.append(float(row["Y"]))
+        plt.plot(ter_X,ter_Y)
+        plt.title("Terrain")
+        plt.show()
     return reader
 
 
