@@ -21,6 +21,7 @@ if __name__ == "__main__":
     # main run
     terrain_data = Overload_calculations(file_path)
     terrain_data.load_terrain()
+    terrain_data.overload_result()
 
     result_array = []
     temp_array = range(35,80,1)

@@ -17,7 +17,6 @@ class Overload_calculations:
         ter_Y = []
         with open(self.file_path, newline="", encoding="utf-8-sig") as csvfile:
             reader = csv.DictReader(csvfile)
-            print(reader.fieldnames)
             for row in reader:
                 ter_X.append(float(row["X"]))
                 ter_Y.append(float(row["Y"]))
@@ -25,8 +24,10 @@ class Overload_calculations:
                 for j in range(len(ter_X)):
                     if Overload_calculations.posts_X[i] == ter_X[j]:
                         Overload_calculations.posts_Y.append(round(ter_Y[j],3))
-            print(Overload_calculations.posts_X)
-            print(Overload_calculations.posts_Y)
+
+    def overload_result(self):
+        print("Chosen X for posts", Overload_calculations.posts_X)
+        print("Chosen Y for posts", Overload_calculations.posts_Y)
 
 
 
