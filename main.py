@@ -1,23 +1,8 @@
 from current_demand import *
 from overload_auto import *
+from constants import *
 
 if __name__ == "__main__":
-    file_path = "data/data.csv"
-    # terrain data input
-    post_type = "Sudok"
-    reliability_level = 2
-    terrain_category = 2
-    wind_area = 1
-    terrain_type = 2
-    frost_area = "I2"
-    frost_type = "Wet Snow"
-    T_env_max = 33 # C degrees
-    V_min = 0.4 # m/s
-    I_sun = 1097 # w/m
-    k_abs = 0.5
-    k_emis = 0.5
-    h_sea = 400
-    isolator_length = 5
     # cable data sheet input
     cable_unit_weight = 1.4523 # kg/m
     T_cab_max = 80 # C degree
@@ -28,7 +13,7 @@ if __name__ == "__main__":
     Rdc20 = 0.0608
 
     # main run
-    terrain_data = Overload_calculations(file_path, isolator_length,[0,275,600,800,1300], cable_unit_weight)
+    terrain_data = Overload_calculations(isolator_length,[0,275,600,800,1300], cable_unit_weight)
     terrain_data.overload_result()
 
     result_array = []
