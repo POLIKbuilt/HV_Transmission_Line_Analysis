@@ -57,7 +57,7 @@ class Overload_calculations:
         frost_load = I_R50 * k_h * K_LC
         wind_q_average = 0.5 * P_AIR * wind_v_average ** 2
         wind_q_max = (1 + 7 * turb_intz) * wind_q_average
-
+        # next to add equation number 5.88
 
 
 
