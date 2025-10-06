@@ -1,12 +1,6 @@
-import os
 import csv
 import  matplotlib.pyplot as plt
 from current_demand import *
-
-base_dir = os.path.dirname(__file__)
-
-file_path = os.path.join(base_dir, 'data.csv')
-# 'D:\IT\Transmission_Line_Analysis_VEV'
 
 def load_terrain(file_path):
     # csv read
