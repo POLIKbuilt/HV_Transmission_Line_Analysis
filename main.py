@@ -2,19 +2,7 @@ import csv
 import  matplotlib.pyplot as plt
 from current_demand import *
 
-def load_terrain(file_path):
-    # csv read
-    ter_X = []
-    ter_Y = []
-    with open(file_path, newline="", encoding="utf-8-sig") as csvfile:
-        reader = csv.DictReader(csvfile)
-        print(reader.fieldnames)
-        for row in reader:
-            ter_X.append(float(row["X"]))
-            ter_Y.append(float(row["Y"]))
-        # plt.plot(ter_X,ter_Y)
-        # plt.title("Terrain")
-        # plt.show()
+
 
 
 if __name__ == "__main__":
@@ -35,7 +23,7 @@ if __name__ == "__main__":
     Rdc20 = 0.0608
 
     # main run
-    terrain_data = load_terrain(file_path)
+    # terrain_data = load_terrain(file_path)
 
     result_array = []
     temp_array = range(35,80,1)
@@ -44,8 +32,8 @@ if __name__ == "__main__":
         Pr = Demand_Current.teplo_radiation(30.2, t_a, 80)
         Ps = Demand_Current.teplo_ziarenia(1000, 30.2)
         result_array.append(round(Demand_Current.ampacita(Pc, Pr, Ps, Rdc20),3))
-    plt.plot(temp_array, result_array)
-    plt.title("Ampacy")
-    plt.show()
+    # plt.plot(temp_array, result_array)
+    # plt.title("Ampacy")
+    # plt.show()
 
     
