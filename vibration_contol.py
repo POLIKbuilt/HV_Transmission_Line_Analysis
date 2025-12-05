@@ -68,4 +68,18 @@ class VibrationControl:
             if i + 1 < len(self.v_h_alt):
                 self.j_x[i] = (
                     self.c_80 * (np.cosh((self.v_x_min[i] - self.v_a_ciarka[i]) / self.c_80)) - self.c_80 + self.v_h_par[i] - (self.v_x_min[i] * (self.v_h_alt[i + 1] - self.v_h_alt[i]) / self.v_rozpatie[i] + self.v_h_alt[i]))
+                
+    def calculate_plot(self, x, f_x, g_x, f_x_12, setIndex, v_rozpatie):
+        plt.figure()
+        plt.plot(x, f_x, '-.', label='f(x)', linewidth=1.0)
+        plt.plot(x, g_x, '--', label='g(x)')
+        plt.plot(x, f_x_12, ':', label='f_12(x)', linewidth=1.25)
+        plt.grid(True)
+        plt.title(f'Розпяття {setIndex}')
+        plt.ylabel("h [м]")
+        plt.xlabel("a [м]")
+        plt.xlim([0, v_rozpatie])
+        plt.legend()
+        plt.show()
+
 
