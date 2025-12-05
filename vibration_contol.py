@@ -82,4 +82,25 @@ class VibrationControl:
         plt.legend()
         plt.show()
 
+    def run(self):
+        self.vibro_equations()
+        self.compute_heights()
 
+        for setIndex in range(len(self.v_rozpatie)):
+            x = np.arange(1, self.v_rozpatie[setIndex] + 1)
+
+            g_x = self.c_80 * (
+                np.cosh((x - self.v_a_ciarka[setIndex]) / self.c_80)
+            ) - self.c_80 + self.v_h_par[setIndex]
+
+            f_x = (
+                x * (self.v_h_alt[setIndex + 1] - self.v_h_alt[setIndex])
+                / self.v_rozpatie[setIndex]
+                + self.v_h_alt[setIndex]
+            )
+
+            f_x_12 = f_x + 12
+
+            self.calculate_plot(
+                x, f_x, g_x, f_x_12, setIndex + 1, self.v_rozpatie[setIndex]
+            )
