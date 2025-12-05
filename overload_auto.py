@@ -57,7 +57,18 @@ class Overload_calculations:
         frost_load = I_R50 * k_h * K_LC
         wind_q_average = 0.5 * P_AIR * wind_v_average ** 2
         wind_q_max = (1 + 7 * turb_intz) * wind_q_average
-        # next to add equation number 5.88
+        k_response = 1 / (1 + (1.5 * (turb_responce / turb_lenth)))
+        k_construction = (1 + 2 * K_P * turb_intz * np.sqrt(k_response + R)) / (1 + 7 * turb_intz) # k_p is unknown value for now check the tables
+        wind_load = wind_q_max * self.cable_d * C_0 * k_construction
+        frost_extreme_load = frost_load * frost_extreme_k
+        wind_extreme_load = wind_load * wind_extreme_k
+        frost_average_load = frost_load * frost_tau
+        cable_d_frost_extreme = np.sqrt(self.cable_d + ((4 * frost_extreme_load) / (g * np.pi * 500)))
+        cable_d_frost_average = np.sqrt(self.cable_d + ((4 * frost_average_load) / (g * np.pi * 500)))
+        wind_average_load_extreme_frost = wind_q_max * cable_d_frost_extreme *
+        wind_extreme_load_average_frost =
+
+        # continue later...
 
 
 
