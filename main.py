@@ -1,21 +1,46 @@
 from constants import *
 from ampacity import *
-from overload_auto import *
+from cable_parameters import *
+# from overload_auto import *
 
 if __name__ == "__main__":
     # Chosen cable data
-    cable_name  = "434-AL1/56-ST1A"
-    cable_unit_weight = 1.4523 # kg/m
-    cable_diameter = 30.2 # mm
-    T_cab_max = 80 # C degree
-    h_env = 12 # m
-    L_dn = 5 # m
-    ampacita_min = 2000 # A
+    cable = {
+        "name": "434-AL1/56-ST1A",
+        "diameter": 0.0288,  # m
+        "area_full": 0.0004906,  # m2
+        "St_wires": 7,
+        "St_diameter": 0.0032,
+        "Al_wires": 54,
+        "Al_diameter": 0.0032,
+        "weight": 1.6413,  # kg/m
+        "RTS": 133.59e3,  # N Rated tensile strength
+        "Young_mod": 70_491e6,  # [Pa] Young's modulus
+        "Rdc20": 0.0666 / 1000,  # [Ω/m] DC resistance at 20°C
+        "alpha_linear": 0.00403,  # teplotný koeficient odporu – lineárny
+        "betta_square": 0.0000008,  # teplotný koeficient odporu – kvadratický
+        "alpha_l": 19.3e-6,  # [1/K] Linear thermal expansion coefficient,
+    }
 
-    Rdc20 = 0.0608
+    # Basic cable parameters
+    cable_calculations = CableParameters(cable, MAX_CABLE_TEMP, MAX_OUTSIDE_TEMP)
+    R_AC80 = cable_calculations.AC80_resistance()
+    print("AC80_resistance =", R_AC80)
 
-    #Vibration 
-    montazne_tabulky_konecne = np.random.rand(6, 10) 
+    # Ampacity Calculations Full
+    amp_calculations = AmpacityCalculation(SUN_POWER_OUTPUT, K_ABSORPTION, cable["diameter"], MAX_CABLE_TEMP, MAX_OUTSIDE_TEMP, SEA_HEIGHT, MIN_WIND_SPEED, cable["Al_diameter"], R_AC80)
+    Ps = amp_calculations.sun_radiation_heat()
+    print("Sun radiation heat =", Ps)
+    Pc = amp_calculations.convection_heat()
+    print("Convection heat =", Pc)
+    Pr = amp_calculations.cable_radiation_heat()
+    print("Cable radiation heat =", Pr)
+    I = amp_calculations.ampacity(Ps, Pc, Pr)
+    print("Ampacity = ", I)
+
+
+    #Vibration
+    montazne_tabulky_konecne = np.random.rand(6, 10)
     v_rozpatie = np.array([275, 275, 310, 320, 305, 298])
     v_sigma_h1 = np.array([0, 0, 0, 1000])
     v_h_alt = np.array([259.2, 254.3, 256.7, 256.2, 258.7, 234.2, 259.1])
@@ -25,9 +50,6 @@ if __name__ == "__main__":
     S = 431.2
     terrain_type = 3
 
-    ampacita = AmpacitaCalculation(SUN_POWER_OUTPUT, K_ABSORPTION, 21.84, MAX_CABLE_TEMP, MAX_OUTSIDE_TEMP, SEA_HEIGHT, MIN_WIND_SPEED, 3.45)
-    I_dov = ampacita.ampacita()
-    print("Ampacita = " + str(I_dov))
     # main run
     # terrain_data = Overload_calculations([0,275,600,800,1300], cable_unit_weight, cable_diameter)
     # terrain_data.overload_result()
