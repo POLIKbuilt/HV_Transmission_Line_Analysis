@@ -1,9 +1,10 @@
 from constants import *
-from current_demand import *
+from ampacity import *
 from overload_auto import *
 
 if __name__ == "__main__":
-    # cable data sheet input
+    # Chosen cable data
+    cable_name  = "434-AL1/56-ST1A"
     cable_unit_weight = 1.4523 # kg/m
     cable_diameter = 30.2 # mm
     T_cab_max = 80 # C degree
@@ -24,10 +25,13 @@ if __name__ == "__main__":
     S = 431.2
     terrain_type = 3
 
+    ampacita = AmpacitaCalculation(SUN_POWER_OUTPUT, K_ABSORPTION, 21.84, MAX_CABLE_TEMP, MAX_OUTSIDE_TEMP, SEA_HEIGHT, MIN_WIND_SPEED, 3.45)
+    I_dov = ampacita.ampacita()
+    print("Ampacita = " + str(I_dov))
     # main run
-    terrain_data = Overload_calculations([0,275,600,800,1300], cable_unit_weight, cable_diameter)
-    terrain_data.overload_result()
-    vibr = VibrationControl(montazne_tabulky_konecne, v_rozpatie, v_sigma_h1,v_h_alt, v_h_con, d, g_c, S, terrain_type)
-    vibr.run()
+    # terrain_data = Overload_calculations([0,275,600,800,1300], cable_unit_weight, cable_diameter)
+    # terrain_data.overload_result()
+    # vibr = VibrationControl(montazne_tabulky_konecne, v_rozpatie, v_sigma_h1,v_h_alt, v_h_con, d, g_c, S, terrain_type)
+    # vibr.run()
 
     
