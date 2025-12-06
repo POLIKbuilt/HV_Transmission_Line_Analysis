@@ -1,10 +1,8 @@
 import numpy as np
 from scipy.constants import sigma, g
-from constants import *
-
 
 class AmpacityCalculation:
-    def __init__(self, sun_power_input, k_absorption, cable_diameter_full, cable_temp, outside_temp, sea_height, wind_speed, outer_cable_diameter, DC20_cable_resistance):
+    def __init__(self, sun_power_input, k_absorption, cable_diameter_full, cable_temp, outside_temp, sea_height, wind_speed, outer_cable_diameter, AC80_cable_resistance):
         self.I_s = sun_power_input
         self.k_abs = k_absorption
         self.d = cable_diameter_full
@@ -13,10 +11,10 @@ class AmpacityCalculation:
         self.h = sea_height
         self.v = wind_speed
         self.d_s = outer_cable_diameter
-        self.Rdc20 = DC20_cable_resistance
+        self.Rac80 = AC80_cable_resistance
 
     def sun_radiation_heat(self):
-        Ps = self.k_abs * self.I_s * (self.d / 1000)
+        Ps = self.k_abs * self.I_s * (self.d)
         return Ps
 
     def convection_heat(self):
@@ -24,7 +22,7 @@ class AmpacityCalculation:
         v_f = 0.0000132 + 0.000000095 * t_f
         lambda_f = 0.0242 + 0.000072 * t_f
         por = np.e ** (-0.000116 * self.h)
-        R_e = por * self.v * ( (self.d / 1000) / v_f )
+        R_e = por * self.v * ( (self.d) / v_f )
         R_s = self.d_s / ( 2 * (self.d - self.d_s ) )
         if R_s < 0.05 and R_e > 100 and R_e < 2650:
             B1 = 0.691
@@ -41,7 +39,7 @@ class AmpacityCalculation:
         Nu90 = B1 * (R_e ** N1)
         Nu45 = (0.42 + 0.58 * (np.sin(45)) ** 0.90 ) * Nu90
         Nu_corr = 0.55 * Nu90
-        Gr = ((self.d / 1000) ** 3 * (self.t_s - self.t_a ) * g ) / (( t_f + 273 ) * v_f ** 2)
+        Gr = ((self.d) ** 3 * (self.t_s - self.t_a ) * g ) / (( t_f + 273 ) * v_f ** 2)
         Pr = 0.715 - 0.00025 * t_f
         sumar = Gr * Pr
         if sumar > 0 and sumar < 0.1:
@@ -64,23 +62,11 @@ class AmpacityCalculation:
         return Pc
 
     def cable_radiation_heat(self):
-        Pr = np.pi * (self.d / 1000) * sigma  * 0.5 * ( (self.t_s + 273 ) ** 4 - (self.t_a + 273) ** 4)
+        Pr = np.pi * (self.d) * sigma  * 0.5 * ( (self.t_s + 273 ) ** 4 - (self.t_a + 273) ** 4)
         return  Pr
 
     def ampacity(self, Ps, Pc, Pr):
-        alpha_R = 0.00403
-        k_acdc = 1.080
-        Rdc80 = (self.Rdc20 * (1 - alpha_R * (80 - 20) )) / 1000
-        Rac80 = Rdc80 * k_acdc
-        I_dov = np.sqrt((Pc + Pr - Ps) / Rac80)
-        return I_dov
+        I_dov = np.sqrt((Pc + Pr - Ps) / self.Rac80)
+        I_bundle = I_dov * 3
+        return I_bundle
 
-amp_calculations = AmpacityCalculation(SUN_POWER_OUTPUT, K_ABSORPTION, 21.84, MAX_CABLE_TEMP, MAX_OUTSIDE_TEMP, SEA_HEIGHT, MIN_WIND_SPEED, 3.45, 0.1188)
-Ps = amp_calculations.sun_radiation_heat()
-print("Sun radiation heat =", Ps)
-Pc = amp_calculations.convection_heat()
-print("Convection heat =", Pc)
-Pr = amp_calculations.cable_radiation_heat()
-print("Cable radiation heat =", Pr)
-I = amp_calculations.ampacity(Ps, Pc, Pr)
-print("Ampacity = " , I)
