@@ -2,6 +2,7 @@ from constants import *
 from ampacity import *
 from cable_parameters import *
 from montage_tables import *
+from vibration_control import *
 
 if __name__ == "__main__":
     # Chosen cable data
@@ -23,7 +24,9 @@ if __name__ == "__main__":
         "betta_square": 0.0000008,  # teplotný koeficient odporu – kvadratický
         "alpha_l": 19.3e-6,  # [1/K] Linear thermal expansion coefficient,
     }
-    towers_X = [0, 275, 600, 800, 1300]
+    towers_X = [0, 275, 600, 860, 1160, 1300]
+    towers_H = [18.2, 24, 24, 24, 24, 18.20]
+    towers_N = [12, 12, 12, 15, 18, 3]
     end_montage_table_temps = np.array([-30, -20, -10, -5, -5, -5, -5, -5, 0, 10, 20, 40, 60, 80])
     start_montage_table_temps = np.array([-10, -5, 0, 10, 15, 17, 20, 22, 25, 27, 30, 35, 40])
 
@@ -43,18 +46,21 @@ if __name__ == "__main__":
     print("Cable radiation heat =", Pr)
     I = amp_calculations.ampacity(Ps, Pc, Pr)
     print("Ampacity = ", I)
-    
+    '''
     #End Montage Table
-    table_calculations = EndMontageTable(FILE_PATH, cable, end_montage_table_temps, ISOLATOR_LENGTH, towers_X, WIND_AREA, FROST_AREA, FROST_TYPE, TERRAIN_CATEGORY, TERRAIN_TYPE, RELIABILITY_LEVEL)
+    table_calculations = EndMontageTable(FILE_PATH, cable, end_montage_table_temps, ISOLATOR_LENGTH, towers_X, towers_H, towers_N, WIND_AREA, FROST_AREA, FROST_TYPE, TERRAIN_CATEGORY, TERRAIN_TYPE, RELIABILITY_LEVEL)
     table_calculations.load_terrain()
     table_calculations.overload_calculations()
     end_table = table_calculations.end_state_equation()
-    table_calculations.write_end_table(end_table)
-    step_table = table_calculations.step_montage_table(t_step=8760)
-    table_calculations.write_step_table(step_table)
-    init_table = table_calculations.init_montage_table(0, start_montage_table_temps)
-    table_calculations.write_init_table(init_table)
-    '''
+
+    #table_calculations.write_end_table(end_table)
+    #step_table = table_calculations.step_montage_table(t_step=8760)
+    #table_calculations.write_step_table(step_table)
+    #init_table = table_calculations.init_montage_table(0, start_montage_table_temps)
+    #table_calculations.write_init_table(init_table)
     #Vibration
+    vibration_calculations = VibrationControl(FILE_PATH, cable, end_table, towers_X, towers_H, towers_N, ISOLATOR_LENGTH, TERRAIN_TYPE)
+    print(vibration_calculations.vibration_control_equations())
+    vibration_calculations.minimal_height_check()
 
     
