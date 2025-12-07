@@ -1,9 +1,9 @@
-import numpy as np
+from tensorflow.python.ops.summary_ops_v2 import initialize
 
 from constants import *
 from ampacity import *
 from cable_parameters import *
-# from overload_auto import *
+from montage_tables import *
 
 if __name__ == "__main__":
     # Chosen cable data
@@ -12,23 +12,22 @@ if __name__ == "__main__":
         "diameter": 0.0288,  # m
         "area_full": 0.0004906,  # m2
         "St_wires": 7,
-        "St_diameter": 0.0032, # m
-        "St_area": 0.0000563, # m2
+        "St_diameter": 0.0032,  # m
+        "St_area": 0.0000563,  # m2
         "Al_wires": 54,
-        "Al_diameter": 0.0032, # m
-        "Al_area": 0.00043429, # m2
+        "Al_diameter": 0.0032,  # m
+        "Al_area": 0.00043429,  # m2
         "weight": 1.6413,  # kg/m
         "RTS": 133.59e3,  # N Rated tensile strength
-        "young_mod": 70_491e6,  # [Pa] Young's modulus
+        "young_mod": 70491,  # [MPa] Young's modulus
         "Rdc20": 0.0666 / 1000,  # [Ω/m] DC resistance at 20°C
         "alpha_linear": 0.00403,  # teplotný koeficient odporu – lineárny
         "betta_square": 0.0000008,  # teplotný koeficient odporu – kvadratický
         "alpha_l": 19.3e-6,  # [1/K] Linear thermal expansion coefficient,
     }
-
+    towers_X = [0, 275, 600, 800, 1300]
     end_montage_table_temps = np.array([-30, -20, -10, -5, -5, -5, -5, -5, 0, 10, 20, 40, 60, 80])
-    climate_montage_table_temps = np.array([-10, -5, 0, 10, 15, 17, 20, 22, 25, 27, 30, 35, 40])
-    towers_Y = np.array([0,275,600,800,1300])
+    initial_montage_table_temps = np.array([-10, -5, 0, 10, 15, 17, 20, 22, 25, 27, 30, 35, 40])
 
 
     # Basic cable parameters
@@ -47,22 +46,13 @@ if __name__ == "__main__":
     I = amp_calculations.ampacity(Ps, Pc, Pr)
     print("Ampacity = ", I)
 
-
+    #End Montage Table
+    table_calculations = EndMontageTable(FILE_PATH, cable, end_montage_table_temps, ISOLATOR_LENGTH, towers_X, WIND_AREA, FROST_AREA, FROST_TYPE, TERRAIN_CATEGORY, TERRAIN_TYPE, RELIABILITY_LEVEL)
+    table_calculations.load_terrain()
+    table_calculations.overload_calculations()
+    end_table = table_calculations.end_state_equation()
+    table_calculations.write_end_table(end_table)
+    table_calculations.initial_montage_table()
     #Vibration
-    montazne_tabulky_konecne = np.random.rand(6, 10)
-    v_rozpatie = np.array([275, 275, 310, 320, 305, 298])
-    v_sigma_h1 = np.array([0, 0, 0, 1000])
-    v_h_alt = np.array([259.2, 254.3, 256.7, 256.2, 258.7, 234.2, 259.1])
-    v_h_con = np.array([21.2, 22, 22, 25, 25, 25, 21.2])
-    d = 27
-    g_c = 9.81
-    S = 431.2
-    terrain_type = 3
-
-    # main run
-    # terrain_data = Overload_calculations([0,275,600,800,1300], cable_unit_weight, cable_diameter)
-    # terrain_data.overload_result()
-    # vibr = VibrationControl(montazne_tabulky_konecne, v_rozpatie, v_sigma_h1,v_h_alt, v_h_con, d, g_c, S, terrain_type)
-    # vibr.run()
 
     

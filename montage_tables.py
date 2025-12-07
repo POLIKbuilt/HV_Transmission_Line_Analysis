@@ -1,29 +1,7 @@
 import csv
-from scipy.constants import g
 import numpy as np
-from constants import *
-
-cable = {
-        "name": "434-AL1/56-ST1A",
-        "diameter": 0.0288,  # m
-        "area_full": 0.0004906,  # m2
-        "St_wires": 7,
-        "St_diameter": 0.0032, # m
-        "St_area": 0.0000563, # m2
-        "Al_wires": 54,
-        "Al_diameter": 0.0032, # m
-        "Al_area": 0.00043429, # m2
-        "weight": 1.6413,  # kg/m
-        "RTS": 133.59e3,  # N Rated tensile strength
-        "young_mod": 70491,  # [MPa] Young's modulus
-        "Rdc20": 0.0666 / 1000,  # [Ω/m] DC resistance at 20°C
-        "alpha_linear": 0.00403,  # teplotný koeficient odporu – lineárny
-        "betta_square": 0.0000008,  # teplotný koeficient odporu – kvadratický
-        "alpha_l": 19.3e-6,  # [1/K] Linear thermal expansion coefficient,
-    }
-towers_X = [0,275,600,800,1300]
-end_montage_table_temps = np.array([-30, -20, -10, -5, -5, -5, -5, -5, 0, 10, 20, 40, 60, 80])
-
+import pandas as pd
+from scipy.constants import g
 
 class EndMontageTable:
     def __init__(self, terrain_file, cable, temp_list, isolator_length, towers_X, wind_area, frost_area, frost_type, terrain_category, terrain_type, reliability_level):
@@ -84,6 +62,7 @@ class EndMontageTable:
         self.span_length = []
         for i in range(self.n - 1):
             self.span_length.append(self.towers_X[i + 1] - self.towers_X[i])
+        self.state_z = [1, 1, 1, 1, 0.9, 1.1, 1.05, 1, 1, 1, 1, 1, 1, 1]
 
 
     def load_terrain(self):
@@ -100,7 +79,6 @@ class EndMontageTable:
                         self.towers_Y.append(round(ter_Y[j],3))
         print(self.towers_Y)
 
-
     def overload_calculations(self):
         g_c = self.w_c * g
         if self.d < 0.03 and self.frost_area == "I2":
@@ -113,7 +91,7 @@ class EndMontageTable:
                 h_diff = self.towers_H[i] + self.towers_N[i]
                 self.towers_H_con.append(h_diff)
             else:
-                h_diff = self.towers_H[i] + self.towers_N[i] - ISOLATOR_LENGTH
+                h_diff = self.towers_H[i] + self.towers_N[i] - self.b_i
                 self.towers_H_con.append(h_diff)
         H_con_average = sum(self.towers_H_con) / len(self.towers_H_con)
         k_h = (H_con_average / 10) ** 0.13
@@ -132,7 +110,7 @@ class EndMontageTable:
         elif self.terrain_category == 4:
             z_0 = 1
             k_r = 0.233
-        V_h = self.wind_area_speed * 1 * 1 * k_r * np.log(H_con_average / Z_0)
+        V_h = self.wind_area_speed * 1 * 1 * k_r * np.log(H_con_average / z_0)
         I_v = 1 / (1 * np.log(H_con_average / z_0))
         L_m = sum(self.span_length)
         L = 300 * ((H_con_average / 200) ** (0.67 + 0.05 * np.log(z_0)))
@@ -155,18 +133,26 @@ class EndMontageTable:
         z_W = (np.sqrt(q_wT ** 2 + g_c ** 2)) / g_c
         z_Wi = (np.sqrt((I_3 + g_c) ** 2 + q_wIT ** 2)) / g_c
         z_wI = (np.sqrt((I_T + g_c) ** 2 + q_wI3 ** 2)) / g_c
-        print("-5 + N =", z_I)
-        print("-5 + V =", z_W)
-        print("-5 + Nv =", z_wI)
-        print("-5 + Vn =", z_Wi)
+        self.state_z[4] = z_I
+        self.state_z[5] = z_W
+        self.state_z[6] = z_wI
+        self.state_z[7] = z_Wi
+        print("-5 + N =", self.state_z[4])
+        print("-5 + V =", self.state_z[5])
+        print("-5 + Nv =", self.state_z[6])
+        print("-5 + Vn =", self.state_z[7])
 
-    def state_equation(self):
+    def end_state_equation(self):
+        # Montage table parameters
+        sigma_state = [0] * len(self.temp_list)
+        c_state = [0] * len(self.temp_list)
+        f_vid_state = np.zeros((len(self.span_length), len(self.temp_list)))
+        F_h_state = [0] * len(self.temp_list)
+        RTS_state = [0] * len(self.temp_list)
         start_z = 1
-        state_z = [1, 1, 1, 1, 0.9, 1.1, 1.05, 1, 1, 1, 1, 1, 1, 1]
         start_sigma_h = 52.1
         start_temp = -5
         delta_H = []
-        sigma_state = [0] * len(self.temp_list)
         for i in range(self.n - 1):
             delta_H.append(self.towers_Y[i] + self.towers_H_con[i] - (self.towers_Y[i + 1] + self.towers_H_con[i + 1]))
         x = 0
@@ -187,20 +173,91 @@ class EndMontageTable:
             part_A[i] = 1
             part_B[i] = ((gamma ** 2 * self.young_mod) / 24) * (((a_St * start_z) / start_sigma_h) ** 2) + (self.alpha * self.young_mod * (self.temp_list[i] - start_temp)) - start_sigma_h
             part_C[i] = 0
-            part_D[i] = -(((gamma ** 2) * self.young_mod) / 24) * ((a_St * state_z[i]) ** 2)
+            part_D[i] = -(((gamma ** 2) * self.young_mod) / 24) * ((a_St * self.state_z[i]) ** 2)
 
             part_q[i] = -(part_B[i] ** 2) / 9
             part_r[i] = (-27 * part_D[i] - 2 * part_B[i] ** 3) / 54
 
             if (part_q[i] ** 3 + part_r[i] ** 2) > 0:
-                sigma_state[i] = round((part_r[i] - np.sqrt(part_q[i] ** 3 + part_r[i] ** 2)) ** (1 / 3) + (part_r[i] + np.sqrt(part_q[i] ** 3 + part_r[i] ** 2)) ** (1 / 3) - part_B[i] / 3, 3)
+                sigma_state[i] = round(((part_r[i] - np.sqrt(part_q[i] ** 3 + part_r[i] ** 2)) ** (1 / 3) + (part_r[i] + np.sqrt(part_q[i] ** 3 + part_r[i] ** 2)) ** (1 / 3) - part_B[i] / 3), 3)
             else:
-                sigma_state[i] = round(2 * (-part_q[i]) ** (1 / 6) * np.cos(np.arccos(part_r[i] / np.sqrt(-part_q[i] ** 3)) / 3) - part_B[i] / 3, 3)
+                sigma_state[i] = round(2 * (-part_q[i] ** 3) ** (1 / 6) * np.cos(np.arccos(part_r[i] / np.sqrt(-part_q[i] ** 3)) / 3) - part_B[i] / 3, 3)
 
+        print("A:", part_A[10], "B:", part_B[10], "C:", part_C[10], "D:", part_D[10], "Q:", part_q[10], "R:", part_r[10], "sigma_state:", part_q[9] ** 3 + part_r[9] ** 2 )
 
+        for i in range(len(self.temp_list)):
+            c_state[i] = round(sigma_state[i] / (gamma * self.state_z[i]),3)
+            F_h_state[i] = round(sigma_state[i] * (self.S / 1000),3)
+            RTS_state[i] = round((F_h_state[i] * 1000) / self.rts * 100,3)
+            for j in range(len(self.span_length)):
+                A = self.span_length[j] / (2 * c_state[i])
+                B = np.asinh(-delta_H[j] / self.span_length[j])
+                C = np.asinh(-delta_H[j] / (2 * c_state[i] * np.sinh(self.span_length[j] / (2 * c_state[i]))))
+                f_vid_state[j, i] = round(c_state[i] * (np.cosh(A + C) - np.cosh(B) - (-delta_H[j] / self.span_length[j]) * (A + C - B)),3)
+        end_montage_table = np.vstack([self.temp_list, self.state_z, sigma_state, F_h_state, c_state, RTS_state, f_vid_state])
+        return end_montage_table
 
+    def write_end_table(self, table):
+        excel_file_path = 'data/end_montage_table.xlsx'
+        row_names = ["temp", "z", "sigma","F_h","c", "%RTS","a1","a2","a3","a4"]
+        col_names = ["-30", "-20", "-10", "-5", "-5+N", "-5+V", "-5+Nv", "-5+Vn", "0", "10", "20", "40", "60", "80"]
+        df = pd.DataFrame(table, index=row_names, columns=col_names)
+        with pd.ExcelWriter(excel_file_path) as writer:
+            df.to_excel(writer, sheet_name='Sheet1')
+        df1 = pd.read_excel(excel_file_path, sheet_name='Sheet1')
+        print('End table:')
+        print(df1)
 
-table_calculations = EndMontageTable(FILE_PATH, cable, end_montage_table_temps, ISOLATOR_LENGTH, towers_X, WIND_AREA, FROST_AREA, FROST_TYPE, TERRAIN_CATEGORY, TERRAIN_TYPE, RELIABILITY_LEVEL)
-table_calculations.load_terrain()
-table_calculations.overload_calculations()
-table_calculations.state_equation()
+    def initial_montage_table(self):
+        temp_xekv1 = [0] * len(self.temp_list)
+        sigma1r_state = [0] * len(self.temp_list)
+        c1r_state = [0] * len(self.temp_list)
+        f1r_vid_state = np.zeros((len(self.span_length), len(self.temp_list)))
+        F1r_state = [0] * len(self.temp_list)
+        RTS1r_state = [0] * len(self.temp_list)
+        start_z = 1
+        start_sigma_h = 52.1
+        start_temp = -5
+        delta_H = []
+        for i in range(self.n - 1):
+            delta_H.append(self.towers_Y[i] + self.towers_H_con[i] - (self.towers_Y[i + 1] + self.towers_H_con[i + 1]))
+        x = 0
+        y = 0
+        for i in range(self.n - 1):
+            x += (self.span_length[i] ** 4) / np.sqrt(self.span_length[i] ** 2 + delta_H[i] ** 2)
+            y += np.sqrt(self.span_length[i] ** 2 + delta_H[i] ** 2)
+        a_St = np.sqrt(x / y)
+        gamma = (self.w_c * g) / self.S
+        # Parts of state equation
+        part_A = [0] * len(self.temp_list)
+        part_B = [0] * len(self.temp_list)
+        part_C = [0] * len(self.temp_list)
+        part_D = [0] * len(self.temp_list)
+        part_q = [0] * len(self.temp_list)
+        part_r = [0] * len(self.temp_list)
+        for i in range(len(self.temp_list)):
+            part_A[i] = 1
+            part_B[i] = ((gamma ** 2 * self.young_mod) / 24) * (((a_St * start_z) / start_sigma_h) ** 2) + (self.alpha * self.young_mod * (self.temp_list[i] - start_temp)) - start_sigma_h
+            part_C[i] = 0
+            part_D[i] = -(((gamma ** 2) * self.young_mod) / 24) * ((a_St * self.state_z[i]) ** 2)
+
+            part_q[i] = -(part_B[i] ** 2) / 9
+            part_r[i] = (-27 * part_D[i] - 2 * part_B[i] ** 3) / 54
+
+            if (part_q[i] ** 3 + part_r[i] ** 2) > 0:
+                sigma_state[i] = round(((part_r[i] - np.sqrt(part_q[i] ** 3 + part_r[i] ** 2)) ** (1 / 3) + (part_r[i] + np.sqrt(part_q[i] ** 3 + part_r[i] ** 2)) ** (1 / 3) - part_B[i] / 3), 3)
+            else:
+                sigma_state[i] = round(
+                    2 * (-part_q[i] ** 3) ** (1 / 6) * np.cos(np.arccos(part_r[i] / np.sqrt(-part_q[i] ** 3)) / 3) - part_B[i] / 3, 3)
+
+        for i in range(len(self.temp_list)):
+            c_state[i] = round(sigma_state[i] / (gamma * self.state_z[i]), 3)
+            F_h_state[i] = round(sigma_state[i] * (self.S / 1000), 3)
+            RTS_state[i] = round((F_h_state[i] * 1000) / self.rts * 100, 3)
+            for j in range(len(self.span_length)):
+                A = self.span_length[j] / (2 * c_state[i])
+                B = np.asinh(-delta_H[j] / self.span_length[j])
+                C = np.asinh(-delta_H[j] / (2 * c_state[i] * np.sinh(self.span_length[j] / (2 * c_state[i]))))
+                f_vid_state[j, i] = round(c_state[i] * (np.cosh(A + C) - np.cosh(B) - (-delta_H[j] / self.span_length[j]) * (A + C - B)), 3)
+        end_montage_table = np.vstack([self.temp_list, self.state_z, sigma_state, F_h_state, c_state, RTS_state, f_vid_state])
+        return end_montage_table
