@@ -43,17 +43,18 @@ if __name__ == "__main__":
     print("Cable radiation heat =", Pr)
     I = amp_calculations.ampacity(Ps, Pc, Pr)
     print("Ampacity = ", I)
-    '''
+    
     #End Montage Table
     table_calculations = EndMontageTable(FILE_PATH, cable, end_montage_table_temps, ISOLATOR_LENGTH, towers_X, WIND_AREA, FROST_AREA, FROST_TYPE, TERRAIN_CATEGORY, TERRAIN_TYPE, RELIABILITY_LEVEL)
     table_calculations.load_terrain()
     table_calculations.overload_calculations()
-    # end_table = table_calculations.end_state_equation()
-    # table_calculations.write_end_table(end_table)
-    # step_table = table_calculations.step_montage_table(t_step=8760)
-    # table_calculations.write_step_table(step_table)
+    end_table = table_calculations.end_state_equation()
+    table_calculations.write_end_table(end_table)
+    step_table = table_calculations.step_montage_table(t_step=8760)
+    table_calculations.write_step_table(step_table)
     init_table = table_calculations.init_montage_table(0, start_montage_table_temps)
     table_calculations.write_init_table(init_table)
+    '''
     #Vibration
 
     
