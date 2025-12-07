@@ -1,3 +1,5 @@
+import numpy as np
+
 from constants import *
 from ampacity import *
 from cable_parameters import *
@@ -10,17 +12,24 @@ if __name__ == "__main__":
         "diameter": 0.0288,  # m
         "area_full": 0.0004906,  # m2
         "St_wires": 7,
-        "St_diameter": 0.0032,
+        "St_diameter": 0.0032, # m
+        "St_area": 0.0000563, # m2
         "Al_wires": 54,
-        "Al_diameter": 0.0032,
+        "Al_diameter": 0.0032, # m
+        "Al_area": 0.00043429, # m2
         "weight": 1.6413,  # kg/m
         "RTS": 133.59e3,  # N Rated tensile strength
-        "Young_mod": 70_491e6,  # [Pa] Young's modulus
+        "young_mod": 70_491e6,  # [Pa] Young's modulus
         "Rdc20": 0.0666 / 1000,  # [Ω/m] DC resistance at 20°C
         "alpha_linear": 0.00403,  # teplotný koeficient odporu – lineárny
         "betta_square": 0.0000008,  # teplotný koeficient odporu – kvadratický
         "alpha_l": 19.3e-6,  # [1/K] Linear thermal expansion coefficient,
     }
+
+    end_montage_table_temps = np.array([-30, -20, -10, -5, -5, -5, -5, -5, 0, 10, 20, 40, 60, 80])
+    climate_montage_table_temps = np.array([-10, -5, 0, 10, 15, 17, 20, 22, 25, 27, 30, 35, 40])
+    towers_Y = np.array([0,275,600,800,1300])
+
 
     # Basic cable parameters
     cable_calculations = CableParameters(cable, MAX_CABLE_TEMP, MAX_OUTSIDE_TEMP)
