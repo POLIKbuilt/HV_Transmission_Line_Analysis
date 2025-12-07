@@ -2,6 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from math import asinh, log
 
+from ampacity import Ampacita
+
+
 class VibrationControl:
     def __init__(self, montazne_tabulky_konecne, v_rozpatie, v_sigma_h1, v_h_alt, v_h_con, d, g_c, S, terrain_type):
         self.montazne_tabulky_konecne = montazne_tabulky_konecne
@@ -83,7 +86,7 @@ class VibrationControl:
         plt.show()
 
     def run(self):
-        self.vibro_equations()
+        self.vibration_control_equations()
         self.compute_heights()
 
         for setIndex in range(len(self.v_rozpatie)):
@@ -104,3 +107,5 @@ class VibrationControl:
             self.calculate_plot(
                 x, f_x, g_x, f_x_12, setIndex + 1, self.v_rozpatie[setIndex]
             )
+
+
