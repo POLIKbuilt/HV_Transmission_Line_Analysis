@@ -1,4 +1,3 @@
-# Basically calculation of overload on task provided cable
 import csv
 from constants import *
 from scipy.constants import g
