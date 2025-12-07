@@ -14,7 +14,7 @@ class EndMontageTable:
         self.rts = cable["RTS"]
         self.rts_control = 50 # %
         self.w_st = cable["St_area"]
-        self.w_fe = self.w_st / self.w_c
+        self.w_fe = 0.266
         self.f_max = 12 # m
         self.temp_list = temp_list
         self.b_i = isolator_length
@@ -208,8 +208,7 @@ class EndMontageTable:
         print('End table:')
         print(df1)
 
-    def initial_montage_table(self):
-        temp_xekv1 = [0] * len(self.temp_list)
+    def step_montage_table(self, t_step):
         sigma1r_state = [0] * len(self.temp_list)
         c1r_state = [0] * len(self.temp_list)
         f1r_vid_state = np.zeros((len(self.span_length), len(self.temp_list)))
@@ -235,7 +234,12 @@ class EndMontageTable:
         part_D = [0] * len(self.temp_list)
         part_q = [0] * len(self.temp_list)
         part_r = [0] * len(self.temp_list)
-        for i in range(len(self.temp_list)):
+        phi = 28.2 # mm/ km * h ** -1
+        t_0 = 262800 # h
+        T_EDT = 20 # C degrees for SR
+        nu = 0.263
+        if True:
+            i = 10
             part_A[i] = 1
             part_B[i] = ((gamma ** 2 * self.young_mod) / 24) * (((a_St * start_z) / start_sigma_h) ** 2) + (self.alpha * self.young_mod * (self.temp_list[i] - start_temp)) - start_sigma_h
             part_C[i] = 0
@@ -245,19 +249,143 @@ class EndMontageTable:
             part_r[i] = (-27 * part_D[i] - 2 * part_B[i] ** 3) / 54
 
             if (part_q[i] ** 3 + part_r[i] ** 2) > 0:
-                sigma_state[i] = round(((part_r[i] - np.sqrt(part_q[i] ** 3 + part_r[i] ** 2)) ** (1 / 3) + (part_r[i] + np.sqrt(part_q[i] ** 3 + part_r[i] ** 2)) ** (1 / 3) - part_B[i] / 3), 3)
+                sigma_EDT = round(((part_r[i] - np.sqrt(part_q[i] ** 3 + part_r[i] ** 2)) ** (1 / 3) + (part_r[i] + np.sqrt(part_q[i] ** 3 + part_r[i] ** 2)) ** (1 / 3) - part_B[i] / 3), 3)
             else:
-                sigma_state[i] = round(
+                sigma_EDT = round(2 * (-part_q[i] ** 3) ** (1 / 6) * np.cos(np.arccos(part_r[i] / np.sqrt(-part_q[i] ** 3)) / 3) - part_B[i] / 3, 3)
+
+        k_w = 1.212 - 1.06 * self.w_fe
+        k_EDS = round(0.0319 * ((100 * sigma_EDT * self.S) / self.rts) ** 1.15, 3)
+        k_EDT = 0.842 + 0.0079 * T_EDT
+        delta_T1r = - (1 / (self.alpha * 10e5)) * k_EDT * k_EDS * k_w * phi * ((t_0 ** nu) - (t_step ** nu))
+        temp_xekv1 = [0] * len(self.temp_list)
+
+        for i in range(len(self.temp_list)):
+            temp_xekv1[i] = self.temp_list[i] + delta_T1r
+            part_A[i] = 1
+            part_B[i] = ((gamma ** 2 * self.young_mod) / 24) * (((a_St * start_z) / start_sigma_h) ** 2) + (self.alpha * self.young_mod * (temp_xekv1[i] - start_temp)) - start_sigma_h
+            part_C[i] = 0
+            part_D[i] = -(((gamma ** 2) * self.young_mod) / 24) * ((a_St * self.state_z[i]) ** 2)
+
+            part_q[i] = -(part_B[i] ** 2) / 9
+            part_r[i] = (-27 * part_D[i] - 2 * part_B[i] ** 3) / 54
+
+            if (part_q[i] ** 3 + part_r[i] ** 2) > 0:
+                sigma1r_state[i] = round(((part_r[i] - np.sqrt(part_q[i] ** 3 + part_r[i] ** 2)) ** (1 / 3) + (part_r[i] + np.sqrt(part_q[i] ** 3 + part_r[i] ** 2)) ** (1 / 3) - part_B[i] / 3), 3)
+            else:
+                sigma1r_state[i] = round(
                     2 * (-part_q[i] ** 3) ** (1 / 6) * np.cos(np.arccos(part_r[i] / np.sqrt(-part_q[i] ** 3)) / 3) - part_B[i] / 3, 3)
 
         for i in range(len(self.temp_list)):
-            c_state[i] = round(sigma_state[i] / (gamma * self.state_z[i]), 3)
-            F_h_state[i] = round(sigma_state[i] * (self.S / 1000), 3)
-            RTS_state[i] = round((F_h_state[i] * 1000) / self.rts * 100, 3)
+            c1r_state[i] = round(sigma1r_state[i] / (gamma * self.state_z[i]), 3)
+            F1r_state[i] = round(sigma1r_state[i] * (self.S / 1000), 3)
+            RTS1r_state[i] = round((F1r_state[i] * 1000) / self.rts * 100, 3)
             for j in range(len(self.span_length)):
-                A = self.span_length[j] / (2 * c_state[i])
+                A = self.span_length[j] / (2 * c1r_state[i])
                 B = np.asinh(-delta_H[j] / self.span_length[j])
-                C = np.asinh(-delta_H[j] / (2 * c_state[i] * np.sinh(self.span_length[j] / (2 * c_state[i]))))
-                f_vid_state[j, i] = round(c_state[i] * (np.cosh(A + C) - np.cosh(B) - (-delta_H[j] / self.span_length[j]) * (A + C - B)), 3)
-        end_montage_table = np.vstack([self.temp_list, self.state_z, sigma_state, F_h_state, c_state, RTS_state, f_vid_state])
-        return end_montage_table
+                C = np.asinh(-delta_H[j] / (2 * c1r_state[i] * np.sinh(self.span_length[j] / (2 * c1r_state[i]))))
+                f1r_vid_state[j, i] = round(c1r_state[i] * (np.cosh(A + C) - np.cosh(B) - (-delta_H[j] / self.span_length[j]) * (A + C - B)), 3)
+        step_montage_table = np.vstack([self.temp_list, temp_xekv1, self.state_z, sigma1r_state, F1r_state, c1r_state, RTS1r_state, f1r_vid_state])
+        return step_montage_table
+
+    def write_step_table(self, table):
+        excel_file_path = 'data/step_montage_table.xlsx'
+        row_names = ["temp", "temp_cor", "z", "sigma","F_h","c", "%RTS","a1","a2","a3","a4"]
+        col_names = ["-30", "-20", "-10", "-5", "-5+N", "-5+V", "-5+Nv", "-5+Vn", "0", "10", "20", "40", "60", "80"]
+        df = pd.DataFrame(table, index=row_names, columns=col_names)
+        with pd.ExcelWriter(excel_file_path) as writer:
+            df.to_excel(writer, sheet_name='Sheet1')
+        df1 = pd.read_excel(excel_file_path, sheet_name='Sheet1')
+        print('Step table:')
+        print(df1)
+
+    def init_montage_table(self, t_step, start_temp_list):
+        sigma1r_state = [0] * len(start_temp_list)
+        c1r_state = [0] * len(start_temp_list)
+        f1r_vid_state = np.zeros((len(self.span_length), len(start_temp_list)))
+        F1r_state = [0] * len(start_temp_list)
+        RTS1r_state = [0] * len(start_temp_list)
+        start_z = 1
+        start_sigma_h = 52.1
+        start_temp = -5
+        delta_H = []
+        for i in range(self.n - 1):
+            delta_H.append(self.towers_Y[i] + self.towers_H_con[i] - (self.towers_Y[i + 1] + self.towers_H_con[i + 1]))
+        x = 0
+        y = 0
+        for i in range(self.n - 1):
+            x += (self.span_length[i] ** 4) / np.sqrt(self.span_length[i] ** 2 + delta_H[i] ** 2)
+            y += np.sqrt(self.span_length[i] ** 2 + delta_H[i] ** 2)
+        a_St = np.sqrt(x / y)
+        gamma = (self.w_c * g) / self.S
+        # Parts of state equation
+        part_A = [0] * len(start_temp_list)
+        part_B = [0] * len(start_temp_list)
+        part_C = [0] * len(start_temp_list)
+        part_D = [0] * len(start_temp_list)
+        part_q = [0] * len(start_temp_list)
+        part_r = [0] * len(start_temp_list)
+        phi = 28.2 # mm/ km * h ** -1
+        t_0 = 262800 # h
+        T_EDT = 20 # C degrees for SR
+        nu = 0.263
+        if True:
+            i = 10
+            part_A[i] = 1
+            part_B[i] = ((gamma ** 2 * self.young_mod) / 24) * (((a_St * start_z) / start_sigma_h) ** 2) + (self.alpha * self.young_mod * (self.temp_list[i] - start_temp)) - start_sigma_h
+            part_C[i] = 0
+            part_D[i] = -(((gamma ** 2) * self.young_mod) / 24) * ((a_St * self.state_z[i]) ** 2)
+
+            part_q[i] = -(part_B[i] ** 2) / 9
+            part_r[i] = (-27 * part_D[i] - 2 * part_B[i] ** 3) / 54
+
+            if (part_q[i] ** 3 + part_r[i] ** 2) > 0:
+                sigma_EDT = round(((part_r[i] - np.sqrt(part_q[i] ** 3 + part_r[i] ** 2)) ** (1 / 3) + (part_r[i] + np.sqrt(part_q[i] ** 3 + part_r[i] ** 2)) ** (1 / 3) - part_B[i] / 3), 3)
+            else:
+                sigma_EDT = round(2 * (-part_q[i] ** 3) ** (1 / 6) * np.cos(np.arccos(part_r[i] / np.sqrt(-part_q[i] ** 3)) / 3) - part_B[i] / 3, 3)
+
+        k_w = 1.212 - 1.06 * self.w_fe
+        k_EDS = round(0.0319 * ((100 * sigma_EDT * self.S) / self.rts) ** 1.15, 3)
+        k_EDT = 0.842 + 0.0079 * T_EDT
+        delta_T1r = - (1 / (self.alpha * 10e5)) * k_EDT * k_EDS * k_w * phi * ((t_0 ** nu) - (t_step ** nu))
+        temp_xekv1 = [0] * len(start_temp_list)
+        init_z = [0] * len(start_temp_list)
+
+        for i in range(len(start_temp_list)):
+            temp_xekv1[i] = start_temp_list[i] + delta_T1r
+            init_z[i] = 1
+            part_A[i] = 1
+            part_B[i] = ((gamma ** 2 * self.young_mod) / 24) * (((a_St * start_z) / start_sigma_h) ** 2) + (self.alpha * self.young_mod * (temp_xekv1[i] - start_temp)) - start_sigma_h
+            part_C[i] = 0
+            part_D[i] = -(((gamma ** 2) * self.young_mod) / 24) * ((a_St * init_z[i]) ** 2)
+
+            part_q[i] = -(part_B[i] ** 2) / 9
+            part_r[i] = (-27 * part_D[i] - 2 * part_B[i] ** 3) / 54
+
+            if (part_q[i] ** 3 + part_r[i] ** 2) > 0:
+                sigma1r_state[i] = round(((part_r[i] - np.sqrt(part_q[i] ** 3 + part_r[i] ** 2)) ** (1 / 3) + (part_r[i] + np.sqrt(part_q[i] ** 3 + part_r[i] ** 2)) ** (1 / 3) - part_B[i] / 3), 3)
+            else:
+                sigma1r_state[i] = round(
+                    2 * (-part_q[i] ** 3) ** (1 / 6) * np.cos(np.arccos(part_r[i] / np.sqrt(-part_q[i] ** 3)) / 3) - part_B[i] / 3, 3)
+
+        for i in range(len(start_temp_list)):
+            c1r_state[i] = round(sigma1r_state[i] / (gamma * init_z[i]), 3)
+            F1r_state[i] = round(sigma1r_state[i] * (self.S / 1000), 3)
+            RTS1r_state[i] = round((F1r_state[i] * 1000) / self.rts * 100, 3)
+            for j in range(len(self.span_length)):
+                A = self.span_length[j] / (2 * c1r_state[i])
+                B = np.asinh(-delta_H[j] / self.span_length[j])
+                C = np.asinh(-delta_H[j] / (2 * c1r_state[i] * np.sinh(self.span_length[j] / (2 * c1r_state[i]))))
+                f1r_vid_state[j, i] = round(c1r_state[i] * (np.cosh(A + C) - np.cosh(B) - (-delta_H[j] / self.span_length[j]) * (A + C - B)), 3)
+        init_montage_table = np.vstack([start_temp_list, temp_xekv1, init_z, sigma1r_state, F1r_state, c1r_state, RTS1r_state, f1r_vid_state])
+        return init_montage_table
+
+    def write_init_table(self, table):
+        excel_file_path = 'data/init_montage_table.xlsx'
+        row_names = ["temp", "temp_cor", "z", "sigma","F_h","c", "%RTS","a1","a2","a3","a4"]
+        col_names = [-10, -5, 0, 10, 15, 17, 20, 22, 25, 27, 30, 35, 40]
+        df = pd.DataFrame(table, index=row_names, columns=col_names)
+        with pd.ExcelWriter(excel_file_path) as writer:
+            df.to_excel(writer, sheet_name='Sheet1')
+        df1 = pd.read_excel(excel_file_path, sheet_name='Sheet1')
+        print('Step table:')
+        print(df1)

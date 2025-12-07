@@ -1,5 +1,3 @@
-from tensorflow.python.ops.summary_ops_v2 import initialize
-
 from constants import *
 from ampacity import *
 from cable_parameters import *
@@ -27,9 +25,9 @@ if __name__ == "__main__":
     }
     towers_X = [0, 275, 600, 800, 1300]
     end_montage_table_temps = np.array([-30, -20, -10, -5, -5, -5, -5, -5, 0, 10, 20, 40, 60, 80])
-    initial_montage_table_temps = np.array([-10, -5, 0, 10, 15, 17, 20, 22, 25, 27, 30, 35, 40])
+    start_montage_table_temps = np.array([-10, -5, 0, 10, 15, 17, 20, 22, 25, 27, 30, 35, 40])
 
-
+    '''
     # Basic cable parameters
     cable_calculations = CableParameters(cable, MAX_CABLE_TEMP, MAX_OUTSIDE_TEMP)
     R_AC80 = cable_calculations.AC80_resistance()
@@ -45,14 +43,17 @@ if __name__ == "__main__":
     print("Cable radiation heat =", Pr)
     I = amp_calculations.ampacity(Ps, Pc, Pr)
     print("Ampacity = ", I)
-
+    '''
     #End Montage Table
     table_calculations = EndMontageTable(FILE_PATH, cable, end_montage_table_temps, ISOLATOR_LENGTH, towers_X, WIND_AREA, FROST_AREA, FROST_TYPE, TERRAIN_CATEGORY, TERRAIN_TYPE, RELIABILITY_LEVEL)
     table_calculations.load_terrain()
     table_calculations.overload_calculations()
-    end_table = table_calculations.end_state_equation()
-    table_calculations.write_end_table(end_table)
-    table_calculations.initial_montage_table()
+    # end_table = table_calculations.end_state_equation()
+    # table_calculations.write_end_table(end_table)
+    # step_table = table_calculations.step_montage_table(t_step=8760)
+    # table_calculations.write_step_table(step_table)
+    init_table = table_calculations.init_montage_table(0, start_montage_table_temps)
+    table_calculations.write_init_table(init_table)
     #Vibration
 
     
