@@ -9,7 +9,7 @@ class CableParameters:
         self.Al_d = cable["Al_diameter"]
         self.m = cable["weight"]
         self.RTS = cable["RTS"]
-        self.Young_mod = cable["Young_mod"]
+        self.young_mod = cable["young_mod"]
         self.Rdc20 = cable["Rdc20"]
         self.alpha_r = cable["alpha_linear"]
         self.beta_r = cable["betta_square"]
