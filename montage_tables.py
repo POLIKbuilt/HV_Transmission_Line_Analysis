@@ -4,7 +4,7 @@ import pandas as pd
 from scipy.constants import g
 
 class EndMontageTable:
-    def __init__(self, terrain_file, cable, temp_list, isolator_length, towers_X, wind_area, frost_area, frost_type, terrain_category, terrain_type, reliability_level):
+    def __init__(self, terrain_file, cable, temp_list, isolator_length, towers_X, towers_H, towers_N, wind_area, frost_area, frost_type, terrain_category, terrain_type, reliability_level):
         self.file = terrain_file
         self.d = cable["diameter"]
         self.w_c = cable["weight"]
@@ -53,16 +53,15 @@ class EndMontageTable:
 
         self.towers_X = towers_X
         self.towers_Y = []
-        self.towers_H = [18.2, 24, 24, 24, 18.20]
-        self.towers_N = [12, 12, 12, 12, 3]
+        self.towers_H = towers_H
+        self.towers_N = towers_N
         self.towers_A = []
         self.n = len(towers_X)
         self.i = len(towers_X) - 1
-        self.towers_N = [12, 12, 12, 12, 3]
         self.span_length = []
         for i in range(self.n - 1):
             self.span_length.append(self.towers_X[i + 1] - self.towers_X[i])
-        self.state_z = [1, 1, 1, 1, 0.9, 1.1, 1.05, 1, 1, 1, 1, 1, 1, 1]
+        self.state_z = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 
 
     def load_terrain(self):
@@ -348,15 +347,13 @@ class EndMontageTable:
         k_EDT = 0.842 + 0.0079 * T_EDT
         delta_T1r = - (1 / (self.alpha * 10e5)) * k_EDT * k_EDS * k_w * phi * ((t_0 ** nu) - (t_step ** nu))
         temp_xekv1 = [0] * len(start_temp_list)
-        init_z = [0] * len(start_temp_list)
 
         for i in range(len(start_temp_list)):
             temp_xekv1[i] = start_temp_list[i] + delta_T1r
-            init_z[i] = 1
             part_A[i] = 1
             part_B[i] = ((gamma ** 2 * self.young_mod) / 24) * (((a_St * start_z) / start_sigma_h) ** 2) + (self.alpha * self.young_mod * (temp_xekv1[i] - start_temp)) - start_sigma_h
             part_C[i] = 0
-            part_D[i] = -(((gamma ** 2) * self.young_mod) / 24) * ((a_St * init_z[i]) ** 2)
+            part_D[i] = -(((gamma ** 2) * self.young_mod) / 24) * ((a_St * self.state_z[i]) ** 2)
 
             part_q[i] = -(part_B[i] ** 2) / 9
             part_r[i] = (-27 * part_D[i] - 2 * part_B[i] ** 3) / 54
@@ -368,7 +365,7 @@ class EndMontageTable:
                     2 * (-part_q[i] ** 3) ** (1 / 6) * np.cos(np.arccos(part_r[i] / np.sqrt(-part_q[i] ** 3)) / 3) - part_B[i] / 3, 3)
 
         for i in range(len(start_temp_list)):
-            c1r_state[i] = round(sigma1r_state[i] / (gamma * init_z[i]), 3)
+            c1r_state[i] = round(sigma1r_state[i] / (gamma * self.state_z[i]), 3)
             F1r_state[i] = round(sigma1r_state[i] * (self.S / 1000), 3)
             RTS1r_state[i] = round((F1r_state[i] * 1000) / self.rts * 100, 3)
             for j in range(len(self.span_length)):
@@ -376,7 +373,7 @@ class EndMontageTable:
                 B = np.asinh(-delta_H[j] / self.span_length[j])
                 C = np.asinh(-delta_H[j] / (2 * c1r_state[i] * np.sinh(self.span_length[j] / (2 * c1r_state[i]))))
                 f1r_vid_state[j, i] = round(c1r_state[i] * (np.cosh(A + C) - np.cosh(B) - (-delta_H[j] / self.span_length[j]) * (A + C - B)), 3)
-        init_montage_table = np.vstack([start_temp_list, temp_xekv1, init_z, sigma1r_state, F1r_state, c1r_state, RTS1r_state, f1r_vid_state])
+        init_montage_table = np.vstack([start_temp_list, temp_xekv1, self.state_z, sigma1r_state, F1r_state, c1r_state, RTS1r_state, f1r_vid_state])
         return init_montage_table
 
     def write_init_table(self, table):
