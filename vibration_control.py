@@ -76,8 +76,11 @@ class VibrationControl:
         return print(vibrations_table)
 
 
-    def compute_heights(self):
-        self.c_80 = self.table[4][13]
+    def compute_heights(self, plot_type):
+        if plot_type == "Start":
+            self.c_80 = self.table[4][3]
+        elif plot_type == "End":
+            self.c_80 = self.table[4][13]
 
         self.a_node = [0] * len(self.span_length)
         self.h_node = [0] * len(self.span_length)
@@ -113,7 +116,7 @@ class VibrationControl:
         plt.legend()
         plt.show()
 
-    def minimal_height_check(self):
+    def minimal_height_check(self, plot_type):
         '''
         self.compute_heights()
         for setIndex in range(len(self.span_length)):
@@ -123,54 +126,36 @@ class VibrationControl:
             f_x_12 = f_x + 12
             self.calculate_plot(x, f_x, g_x, f_x_12, setIndex + 1, self.span_length[setIndex])
         '''
-        self.compute_heights()
-
-        # Continuous X cursor
+        self.compute_heights(plot_type)
         x_offset = 0
-
-        # Storage for full continuous curves
         X_all = []
         f_all = []
         g_all = []
         f12_all = []
-
         for i in range(len(self.span_length)):
             span = self.span_length[i]
-
-            # Local x for this span
             x_local = np.arange(0, span)
-
-            # Global continuous x
             x_global = x_local + x_offset
 
-            # Compute curves
             g_x = self.c_80 * (np.cosh((x_local - self.a_node[i]) / self.c_80)) - self.c_80 + self.h_node[i]
             f_x = x_local * (self.towers_Y[i + 1] - self.towers_Y[i]) / span + self.towers_Y[i]
             f_x_12 = f_x + 12
-
-            # Append to global lists
             X_all.append(x_global)
             f_all.append(f_x)
             g_all.append(g_x)
             f12_all.append(f_x_12)
-
-            # Move offset for next span
             x_offset += span
 
-        # Convert lists to single arrays
         X_all = np.concatenate(X_all)
         f_all = np.concatenate(f_all)
         g_all = np.concatenate(g_all)
         f12_all = np.concatenate(f12_all)
-
-        # Plot all spans as continuous curves
         plt.figure(figsize=(12, 6))
         plt.plot(X_all, f_all, '-.', label='f(x) - terrain', linewidth=1.0)
         plt.plot(X_all, g_all, '--', label='g(x) - cable')
         plt.plot(X_all, f12_all, ':', label='f_12(x) - min', linewidth=1.5)
-
         plt.grid(True)
-        plt.title("Continuous Profile Across All Spans")
+        plt.title("Continuous " + plot_type + " Profile Across All Spans")
         plt.xlabel("a [m]")
         plt.ylabel("h [m]")
         plt.legend()
