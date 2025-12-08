@@ -76,7 +76,7 @@ class EndMontageTable:
                 for j in range(len(ter_X)):
                     if self.towers_X[i] == ter_X[j]:
                         self.towers_Y.append(round(ter_Y[j],3))
-        print(self.towers_Y)
+        print("Y:", self.towers_Y)
 
     def overload_calculations(self):
         g_c = self.w_c * g
@@ -92,8 +92,15 @@ class EndMontageTable:
             else:
                 h_diff = self.towers_H[i] + self.towers_N[i] - self.b_i
                 self.towers_H_con.append(h_diff)
-        H_con_average = sum(self.towers_H_con) / len(self.towers_H_con)
+        counter = 0
+        for i in range(len(self.span_length)):
+            counter += (self.towers_H_con[i] + self.towers_H_con[i + 1]) / 2
+        print("counter:", counter)
+        H_con_average = counter / len(self.span_length)
+        print("H_con:", self.towers_H_con)
+        print("H_con_average:", H_con_average)
         k_h = (H_con_average / 10) ** 0.13
+        print("k_h:", k_h)
         if self.terrain_category == 0:
             z_0 = 0.003
             k_r = 0.155
@@ -149,7 +156,7 @@ class EndMontageTable:
         F_h_state = [0] * len(self.temp_list)
         RTS_state = [0] * len(self.temp_list)
         start_z = 1
-        start_sigma_h = 52.1
+        start_sigma_h = 55.0
         start_temp = -5
         delta_H = []
         for i in range(self.n - 1):
@@ -214,7 +221,7 @@ class EndMontageTable:
         F1r_state = [0] * len(self.temp_list)
         RTS1r_state = [0] * len(self.temp_list)
         start_z = 1
-        start_sigma_h = 52.1
+        start_sigma_h = 55.0
         start_temp = -5
         delta_H = []
         for i in range(self.n - 1):
@@ -304,7 +311,7 @@ class EndMontageTable:
         F1r_state = [0] * len(start_temp_list)
         RTS1r_state = [0] * len(start_temp_list)
         start_z = 1
-        start_sigma_h = 52.1
+        start_sigma_h = 55.0
         start_temp = -5
         delta_H = []
         for i in range(self.n - 1):
