@@ -60,6 +60,7 @@ if __name__ == "__main__":
     # Vibration
     vibration_calculations = VibrationControl(FILE_PATH, cable, end_table, towers_X, towers_H, towers_N, ISOLATOR_LENGTH, TERRAIN_TYPE)
     print(vibration_calculations.vibration_control_equations())
-    vibration_calculations.minimal_height_check()
+    vibration_calculations.minimal_height_check(plot_type="Start")
+    vibration_calculations.minimal_height_check(plot_type="End")
 
     
