@@ -17,7 +17,7 @@ if __name__ == "__main__":
         "Al_diameter": 0.0032,  # m
         "Al_area": 0.00043429,  # m2
         "weight": 1.6413,  # kg/m
-        "RTS": 133.59e3,  # N Rated tensile strength
+        "RTS": 120.23e3,  # N Rated tensile strength
         "young_mod": 70491,  # [MPa] Young's modulus
         "Rdc20": 0.0666 / 1000,  # [Ω/m] DC resistance at 20°C
         "alpha_linear": 0.00403,  # teplotný koeficient odporu – lineárny
