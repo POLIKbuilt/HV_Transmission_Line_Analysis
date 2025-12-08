@@ -7,7 +7,7 @@ class VibrationControl:
     def __init__(self, terrain_file, cable, end_montage_table, towers_X, towers_H, towers_N, isolator_length, terrain_type):
         self.file = terrain_file
         self.d = cable["diameter"]
-        self.S = cable["area_full"]
+        self.S = cable["area_full"] * 10e5
         self.w_c = cable["weight"]
         self.b_i = isolator_length
         self.table = end_montage_table
@@ -47,27 +47,26 @@ class VibrationControl:
         self.load_terrain()
         self.oblast = [0] * len(self.span_length)
         self.y_coor = [0] * len(self.span_length)
-        for i in range(len(self.span_length) - 1):
+        for i in range(len(self.span_length)):
             self.y_coor[i] = (self.span_length[i] * self.d) / self.g_c
         self.T_0 = self.table[3][3] * self.S
         self.x_coor = self.T_0 / self.g_c
         if self.terrain_type == 1:
-            self.Eq_vib = (1.3 * 10 ** 27) / (self.T_0 / self.g_c) ** 8.3
+            self.Eq_vib = (1.3 * 10e27) / ((self.T_0 / self.g_c) ** 8.2)
             self.c_vib = 1000
         elif self.terrain_type == 2:
-            self.Eq_vib = (5.4 * 10 ** 27) / (self.T_0 / self.g_c) ** 8.4
+            self.Eq_vib = (5.4 * 10e27) / ((self.T_0 / self.g_c) ** 8.3)
             self.c_vib = 1125
         elif self.terrain_type == 3:
-            self.Eq_vib = (1.3 * 10 ** 28) / (self.T_0 / self.g_c) ** 8.4
+            self.Eq_vib = (1.3 * 10e28) / ((self.T_0 / self.g_c) ** 8.4)
             self.c_vib = 1225
         elif self.terrain_type == 4:
-            self.Eq_vib = (1.1 * 10 ** 29) / (self.T_0 / self.g_c) ** 8.6
+            self.Eq_vib = (1.1 * 10e29) / ((self.T_0 / self.g_c) ** 8.6)
             self.c_vib = 1425
-        for i in range(len(self.span_length) - 1):
+        for i in range(len(self.span_length)):
             if self.x_coor <= self.c_vib:
                 self.oblast[i] = 1
             else:
-                self.oblast[i] = 0
                 for j in range(len(self.span_length)):
                     if (self.y_coor[j] <= 1.5) and (self.y_coor[j] <= self.Eq_vib):
                        self.oblast[i] = 2
