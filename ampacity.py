@@ -25,13 +25,13 @@ class AmpacityCalculation:
         R_e = por * self.v * ( (self.d) / v_f )
         R_s = self.d_s / ( 2 * (self.d - self.d_s ) )
         if R_s < 0.05 and R_e > 100 and R_e < 2650:
-            B1 = 0.691
+            B1 = 0.641
             N1 = 0.471
         elif R_s < 0.05 and R_e > 2650 and R_e < 50000:
             B1 = 0.178
             N1 = 0.633
         elif R_s > 0.05 and R_e > 100 and R_e < 2650:
-            B1 = 0.691
+            B1 = 0.641
             N1 = 0.471
         elif R_s > 0.05 and R_e > 2650 and R_e < 50000:
             B1 = 0.048
