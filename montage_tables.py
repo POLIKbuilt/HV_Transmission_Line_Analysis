@@ -95,12 +95,8 @@ class EndMontageTable:
         counter = 0
         for i in range(len(self.span_length)):
             counter += (self.towers_H_con[i] + self.towers_H_con[i + 1]) / 2
-        print("counter:", counter)
         H_con_average = counter / len(self.span_length)
-        print("H_con:", self.towers_H_con)
-        print("H_con_average:", H_con_average)
         k_h = (H_con_average / 10) ** 0.13
-        print("k_h:", k_h)
         if self.terrain_category == 0:
             z_0 = 0.003
             k_r = 0.155
