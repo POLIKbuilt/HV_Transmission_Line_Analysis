@@ -198,7 +198,7 @@ class EndMontageTable:
 
     def write_end_table(self, table):
         excel_file_path = 'data/end_montage_table.xlsx'
-        row_names = ["temp", "z", "sigma","F_h","c", "%RTS","a1","a2","a3","a4"]
+        row_names = ["temp", "z", "sigma","F_h","c", "%RTS","a1","a2","a3","a4", "a5"]
         col_names = ["-30", "-20", "-10", "-5", "-5+N", "-5+V", "-5+Nv", "-5+Vn", "0", "10", "20", "40", "60", "80"]
         df = pd.DataFrame(table, index=row_names, columns=col_names)
         with pd.ExcelWriter(excel_file_path) as writer:
@@ -288,7 +288,7 @@ class EndMontageTable:
 
     def write_step_table(self, table):
         excel_file_path = 'data/step_montage_table.xlsx'
-        row_names = ["temp", "temp_cor", "z", "sigma","F_h","c", "%RTS","a1","a2","a3","a4"]
+        row_names = ["temp", "temp_cor", "z", "sigma","F_h","c", "%RTS","a1","a2","a3","a4", "a5"]
         col_names = ["-30", "-20", "-10", "-5", "-5+N", "-5+V", "-5+Nv", "-5+Vn", "0", "10", "20", "40", "60", "80"]
         df = pd.DataFrame(table, index=row_names, columns=col_names)
         with pd.ExcelWriter(excel_file_path) as writer:
@@ -373,12 +373,13 @@ class EndMontageTable:
                 B = np.asinh(-delta_H[j] / self.span_length[j])
                 C = np.asinh(-delta_H[j] / (2 * c1r_state[i] * np.sinh(self.span_length[j] / (2 * c1r_state[i]))))
                 f1r_vid_state[j, i] = round(c1r_state[i] * (np.cosh(A + C) - np.cosh(B) - (-delta_H[j] / self.span_length[j]) * (A + C - B)), 3)
-        init_montage_table = np.vstack([start_temp_list, temp_xekv1, self.state_z, sigma1r_state, F1r_state, c1r_state, RTS1r_state, f1r_vid_state])
+        state_z = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        init_montage_table = np.vstack([start_temp_list, temp_xekv1, state_z, sigma1r_state, F1r_state, c1r_state, RTS1r_state, f1r_vid_state])
         return init_montage_table
 
     def write_init_table(self, table):
         excel_file_path = 'data/init_montage_table.xlsx'
-        row_names = ["temp", "temp_cor", "z", "sigma","F_h","c", "%RTS","a1","a2","a3","a4"]
+        row_names = ["temp", "temp_cor", "z", "sigma","F_h","c", "%RTS","a1","a2","a3","a4", "a5"]
         col_names = [-10, -5, 0, 10, 15, 17, 20, 22, 25, 27, 30, 35, 40]
         df = pd.DataFrame(table, index=row_names, columns=col_names)
         with pd.ExcelWriter(excel_file_path) as writer:
