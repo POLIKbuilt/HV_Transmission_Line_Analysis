@@ -7,12 +7,47 @@ ______
  * Optimize line parameters for best usage 
  * Add automatisation 
 ______
-Task status due 09/12/2025 - **_In process_**
+Task status due 09/12/2025 - **_Finished_**
 
-## Notes
-Main line holder must be on start (0) and end of terrain (max). 
-Minimal number of lines is 4.
-Line bases are inputted as X coordinates and it's height. 
-Table of inputted parameters should be created based only on X coordinates.
-N - vyskovy stupen, how high will be the line (3,6,9,12).
-All additional info can be found in scripts on page 123.
+---
+
+## Code Structure
+
+```
+HV_Transmission_Line_Analysis/
+├── main.py                  # Main execution script
+├── constants.py            # Task basis 
+├── cable_parameters.py     # Cable resistance calculations
+├── ampacity.py             # Ampacity calculations  
+├── montage_tables.py       # Montage state equations and tables
+├── vibration_control.py    # Vibration and minimal height checks
+└── data/
+    ├── data.csv            # Terrain elevation data
+    └── *.xlsx             # Output tables
+```
+
+### Module Descriptions
+
+**cable_parameters.py**  
+Calculates AC resistance at 80°C considering skin effect and temperature coefficients.
+
+**ampacity.py**  
+Determines maximum current capacity based on:
+- Solar radiation heating
+- Convective cooling
+- Radiative heat transfer
+
+**montage_tables.py**  
+Generates sag-tension tables for:
+- Different temperature conditions (-30°C to +80°C)
+- Ice loading conditions
+- Wind loading conditions
+- Combined loading scenarios
+
+**vibration_control.py**  
+Analyzes:
+- Aeolian vibration risk zones
+- Minimum ground clearance (12m requirement)
+- Vibration damper requirements
+
+---
