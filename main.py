@@ -39,13 +39,14 @@ if __name__ == "__main__":
     # Ampacity Calculations Full
     amp_calculations = AmpacityCalculation(SUN_POWER_OUTPUT, K_ABSORPTION, cable["diameter"], MAX_CABLE_TEMP, MAX_OUTSIDE_TEMP, SEA_HEIGHT, MIN_WIND_SPEED, cable["Al_diameter"], R_AC80)
     Ps = amp_calculations.sun_radiation_heat()
-    print("Sun radiation heat =", Ps)
+    print("Sun radiation heat (Ps) =", Ps)
     Pc = amp_calculations.convection_heat()
-    print("Convection heat =", Pc)
+    print("Convection heat (Pc) = ", Pc)
     Pr = amp_calculations.cable_radiation_heat()
-    print("Cable radiation heat =", Pr)
+    print("Cable radiation heat (Pr) = ", Pr)
+    print("Cable Joulove loss (Pj) = ", Pc + Pr - Ps)
     I = amp_calculations.ampacity(Ps, Pc, Pr)
-    print("Ampacity = ", I)
+    print("Ampacity (I_dov) = ", I)
 
     #End Montage Table
     table_calculations = EndMontageTable(FILE_PATH, cable, end_montage_table_temps, ISOLATOR_LENGTH, towers_X, towers_H, towers_N, WIND_AREA, FROST_AREA, FROST_TYPE, TERRAIN_CATEGORY, TERRAIN_TYPE, RELIABILITY_LEVEL)
