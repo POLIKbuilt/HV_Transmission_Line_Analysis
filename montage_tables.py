@@ -92,6 +92,7 @@ class EndMontageTable:
             else:
                 h_diff = self.towers_H[i] + self.towers_N[i] - self.b_i
                 self.towers_H_con.append(h_diff)
+        print("H_con:", self.towers_H_con)
         counter = 0
         for i in range(len(self.span_length)):
             counter += (self.towers_H_con[i] + self.towers_H_con[i + 1]) / 2
@@ -152,7 +153,7 @@ class EndMontageTable:
         F_h_state = [0] * len(self.temp_list)
         RTS_state = [0] * len(self.temp_list)
         start_z = 1
-        start_sigma_h = 55.0
+        start_sigma_h = 50.0
         start_temp = -5
         delta_H = []
         for i in range(self.n - 1):
@@ -217,7 +218,7 @@ class EndMontageTable:
         F1r_state = [0] * len(self.temp_list)
         RTS1r_state = [0] * len(self.temp_list)
         start_z = 1
-        start_sigma_h = 55.0
+        start_sigma_h = 50.0
         start_temp = -5
         delta_H = []
         for i in range(self.n - 1):
@@ -307,7 +308,7 @@ class EndMontageTable:
         F1r_state = [0] * len(start_temp_list)
         RTS1r_state = [0] * len(start_temp_list)
         start_z = 1
-        start_sigma_h = 55.0
+        start_sigma_h = 50.0
         start_temp = -5
         delta_H = []
         for i in range(self.n - 1):
