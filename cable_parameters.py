@@ -20,7 +20,7 @@ class CableParameters:
 
     def AC80_resistance(self):
         Rdc80 = (self.Rdc20 * (1 + self.alpha_r * (80 - 20) + self.beta_r * ((80 - 20) ** 2)))
-        print("Rdc80: ", Rdc80)
+        print("Rdc80 = ", Rdc80)
         if self.Al_n <= 2:
             if self.d < 20:
                 k_ACDC = 1.005
@@ -36,4 +36,7 @@ class CableParameters:
             else:
                 k_ACDC = 1.08
         Rac80 = Rdc80 * k_ACDC
+        print("Rac80 = ", Rac80)
+        Rac20 = self.Rdc20 * k_ACDC
+        print("Rac20 = ", Rac20)
         return Rac80
