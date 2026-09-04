@@ -9,6 +9,8 @@ ______
 ______
 Task status due 09/12/2025 - **_Finished_**
 
+Status for 05/09/2026 - The project is reopned for update to application 
+
 ---
 
 ## Code Structure
