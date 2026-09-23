@@ -12,11 +12,11 @@ class App(QMainWindow):
         self.setGeometry(300, 300, self.settings["window_width"], self.settings["window_height"])
         self.setCentralWidget(QLabel(f"Theme: {self.settings['theme']}"))
 
-def closeEvent(self, event):
-    self.settings["window_width"] = self.width()
-    self.settings["window_height"] = self.height()
-    save_settings(self.settings)
-    event.accept()
+    def closeEvent(self, event):
+        self.settings["window_width"] = self.width()
+        self.settings["window_height"] = self.height()
+        save_settings(self.settings)
+        event.accept()
 
 app = QApplication(sys.argv)
 window = App()
