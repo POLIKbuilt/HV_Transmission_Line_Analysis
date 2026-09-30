@@ -25,7 +25,10 @@ class App(QMainWindow):
         outer_layout = QVBoxLayout(central_widget)
         form_layout = QFormLayout()
 
-        # inputs
+        # Cable data input
+        self.cable_type = QComboBox()
+        self.cable_type.addItems(["LTV", "MTV", "Steel", "Aluminium"])
+
         self.name_input = QLineEdit()
         self.name_input.setPlaceholderText("Name")
 
@@ -45,6 +48,7 @@ class App(QMainWindow):
         self.subscribe_checkbox = QCheckBox("Subscribe")
 
         # Rows
+        form_layout.addRow("Cable Type", self.cable_type)
         form_layout.addRow("Name", self.name_input)
         form_layout.addRow("Email", self.email_input)
         form_layout.addRow("Age", self.age_input)
@@ -85,6 +89,7 @@ class App(QMainWindow):
         self.clear_form()
 
     def clear_form(self):
+        self.cable_type.clear()
         self.name_input.clear()
         self.email_input.clear()
         self.age_input.setValue(0)
