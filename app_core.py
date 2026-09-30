@@ -14,8 +14,6 @@ class App(QMainWindow):
     def __init__(self):
         super().__init__()
         self.settings = load_settings()
-
-
         self.setWindowTitle("Transmission Analyzer")
         self.setGeometry(300, 300, self.settings["window_width"], self.settings["window_height"])
         self.setCentralWidget(QLabel(f"Theme: {self.settings['theme']}"))
@@ -27,6 +25,9 @@ class App(QMainWindow):
         event.accept()
 
 app = QApplication(sys.argv)
+app.setApplicationName("Transmission Analyzer")
+app.setOrganizationName("polikstarik dev.")
+app.setApplicationVersion("1.0.0")
 window = App()
 window.show()
 sys.excepthook = excepthook
