@@ -100,7 +100,7 @@ class App(QMainWindow):
 app = QApplication(sys.argv)
 app.setApplicationName("Transmission Analyzer")
 app.setOrganizationName("polikstarik dev.")
-app.setApplicationVersion("1.0.0")
+app.setApplicationVersion("1.0.1")
 window = App()
 window.show()
 sys.excepthook = excepthook
