@@ -1,6 +1,14 @@
 import sys
+import logging
+import traceback
 from PyQt5.QtWidgets import QApplication,QMainWindow, QLabel
 from app_settings import load_settings, save_settings
+
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    handlers=[logging.FileHandler("app.log"), logging.StreamHandler()])
+
+def excepthook(exc_type, exc_value, exc_traceback):
+    logging.critical("Uncaught exception: \n%s", "".join(traceback.format_exception(exc_type, exc_value, exc_traceback)))
 
 class App(QMainWindow):
     def __init__(self):
@@ -21,4 +29,5 @@ class App(QMainWindow):
 app = QApplication(sys.argv)
 window = App()
 window.show()
+sys.excepthook = excepthook
 sys.exit(app.exec_())
